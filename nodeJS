@@ -1,0 +1,3 @@
+#! /bin/bash
+
+docker exec -it syrd-nodejs-1 /bin/bash

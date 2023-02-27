@@ -2,7 +2,7 @@ version: '2'
 services:
   nodejs:
     build: .
-    command: node index.js
+    command: npm start
     restart: always
     volumes:
       - ./:/app:delegated

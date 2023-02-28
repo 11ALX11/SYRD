@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import "./app.css";
-import Pages from "./components/pages/pages.js";
+import Pages from "./pages/pages.js";
 import Clock from "./components/clock/clock.js";
 
 class App extends React.Component {
@@ -21,17 +21,27 @@ class App extends React.Component {
                             <li>
                                 <NavLink to="/">Home</NavLink>
                             </li>
-                            <li>
-                                <NavLink to="/account">
-                                    Account{this.state.logged_in ? " (logout)" : ""}
-                                </NavLink>
-                            </li>
+                            {this.state.logged_in && (
+                                <li>
+                                    <NavLink to="/account">Account</NavLink>
+                                </li>
+                            )}
+                            {!this.state.logged_in && (
+                                <>
+                                    <li>
+                                        <NavLink to="/login">Log in</NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink to="/signup">Sign up</NavLink>
+                                    </li>
+                                </>
+                            )}
                         </ul>
                     </nav>
                 </header>
 
                 <main>
-                    <Pages />
+                    <Pages logged_in={this.state.logged_in} />
                 </main>
 
                 <footer>

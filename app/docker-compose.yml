@@ -8,14 +8,15 @@ services:
       - /app/node_modules
     ports:
       - '8080:8080'
+      - '3000:3000'
 
-  #postgres:
+  # postgres:
   #  image: postgres:13.3
   #  restart: always
   #  environment:
-  #    POSTGRES_PASSWORD: "qweasdzxcPOI09"
-  #    PGDATA: "/var/lib/postgresql/data/pgdata"
+  #     POSTGRES_PASSWORD: "qweasdzxcPOI09"
+  #     PGDATA: "/var/lib/postgresql/data/pgdata"
   #  volumes:
-  #    - ../postgresql/data:/var/lib/postgresql/data
+  #     - ../postgresql/data:/var/lib/postgresql/data
   #  ports:
-  #    - '5433:5432'
+  #     - '5433:5432'

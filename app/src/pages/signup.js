@@ -1,5 +1,6 @@
 import React from "react";
 import { Navigate, Link } from "react-router-dom";
+import { SignupForm } from "../components/forms/forms.js";
 
 class Signup extends React.Component {
     constructor(props) {
@@ -11,7 +12,9 @@ class Signup extends React.Component {
         if (!this.props.logged_in) {
             return (
                 <>
-                    <h1>Sign up.</h1>
+                    <h1>Sign up</h1>
+
+                    <SignupForm />
 
                     <p>
                         Or <Link to="/login">log in</Link>.

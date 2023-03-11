@@ -1,6 +1,6 @@
 {
     "name": "SYRD app",
-    "short_name": "SYRD app",
+    "short_name": "SYRD",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",

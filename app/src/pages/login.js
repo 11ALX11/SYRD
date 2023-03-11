@@ -14,7 +14,7 @@ class Login extends React.Component {
                 <>
                     <h1>Log in</h1>
 
-                    <LoginForm />
+                    <LoginForm handleLoginSubmit={this.props.handleLoginSubmit} />
 
                     <p>
                         Or <Link to="/signup">sign up</Link>.

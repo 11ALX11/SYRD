@@ -14,7 +14,7 @@ class Signup extends React.Component {
                 <>
                     <h1>Sign up</h1>
 
-                    <SignupForm />
+                    <SignupForm handleSignupSubmit={(e) => this.props.handleSignupSubmit(e)} />
 
                     <p>
                         Or <Link to="/login">log in</Link>.

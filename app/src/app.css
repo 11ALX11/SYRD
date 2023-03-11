@@ -1,0 +1,16 @@
+#pages {
+    margin-top: 66px;
+    margin-bottom: 126px;
+}
+
+header {
+    height: 56px;
+}
+
+header > nav {
+    height: 56px;
+}
+
+footer {
+    color: var(--bs-light-text);
+}

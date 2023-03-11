@@ -11,7 +11,7 @@ class LoginForm extends React.Component {
         this.handleChangeUsernameInput = this.handleChangeUsernameInput.bind(this);
         this.handleChangePasswordInput = this.handleChangePasswordInput.bind(this);
         this.handleChangeRememberMeInput = this.handleChangeRememberMeInput.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSubmit = this.props.handleLoginSubmit.bind(this);
     }
 
     handleChangeUsernameInput(event) {
@@ -23,40 +23,49 @@ class LoginForm extends React.Component {
     handleChangeRememberMeInput(event) {
         this.setState({ remember_me: event.target.checked });
     }
-    handleSubmit(event) {
-        //ToDo validation, post request
-        alert("Отправленное имя: " + this.state.username + " " + this.state.remember_me);
-        event.preventDefault();
-    }
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
-                <div>
-                    <label>Username:</label>
+            <form className="mb-4" onSubmit={this.handleSubmit}>
+                <div className="mb-3">
+                    <label for="login-form-username" className="form-label">
+                        Username:
+                    </label>
                     <input
+                        id="login-form-username"
+                        className="form-control"
                         type="text"
                         value={this.state.username}
                         onChange={this.handleChangeUsernameInput}
                     ></input>
                 </div>
-                <div>
-                    <label>Password:</label>
+                <div className="mb-3">
+                    <label for="login-form-password" className="form-label">
+                        Password:
+                    </label>
                     <input
+                        id="login-form-password"
+                        className="form-control"
                         type="password"
                         value={this.state.password}
                         onChange={this.handleChangePasswordInput}
                     ></input>
                 </div>
-                <div>
-                    <label>RememberMe:</label>
+                <div className="mb-3">
+                    <label for="login-form-remember-me" className="form-label me-2">
+                        RememberMe:
+                    </label>
                     <input
+                        id="login-form-remember-me"
+                        className="form-check-input"
                         type="checkbox"
                         value={this.state.remember_me}
                         onChange={this.handleChangeRememberMeInput}
                     ></input>
                 </div>
-                <button type="submit">Log in</button>
+                <button className="btn btn-primary" type="submit">
+                    Log in
+                </button>
             </form>
         );
     }

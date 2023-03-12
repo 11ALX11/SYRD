@@ -7,69 +7,106 @@ class SignupForm extends React.Component {
             username: "",
             password: "",
             repeat_password: "",
+            remember_me: false,
         };
         this.handleChangeUsernameInput = this.handleChangeUsernameInput.bind(this);
         this.handleChangePasswordInput = this.handleChangePasswordInput.bind(this);
         this.handleChangeRepeatPasswordInput = this.handleChangeRepeatPasswordInput.bind(this);
-        this.handleSubmit = this.props.handleSignupSubmit.bind(this);
+        this.handleChangeRememberMeInput = this.handleChangeRememberMeInput.bind(this);
     }
 
     handleChangeUsernameInput(event) {
-        this.setState({ username: event.target.value });
+        this.setState({ username: event.target.value, });
+        this.props.popValidationError("account_exist");
     }
     handleChangePasswordInput(event) {
         this.setState({ password: event.target.value });
+        this.props.popValidationError("repeat_password");
     }
     handleChangeRepeatPasswordInput(event) {
         this.setState({ repeat_password: event.target.value });
+        this.props.popValidationError("repeat_password");
     }
-    handleSubmit(event) {
-        //ToDo validation, post request
-        if (this.state.password === this.state.repeat_password) {
-            alert("Отправленное имя: " + this.state.username);
-        } else {
-            alert("Passwords are mismatching!");
-        }
-        event.preventDefault();
+    handleChangeRememberMeInput(event) {
+        this.setState({ remember_me: event.target.checked });
     }
 
     render() {
         return (
-            <form className="mb-4" onSubmit={this.handleSubmit}>
+            <form
+                className="mb-4"
+                onSubmit={(event) => this.props.handleSignupSubmit(this.state, event)}
+                method="post"
+            >
                 <div className="mb-3">
-                    <label for="signup-form-username" className="form-label">
+                    <label htmlFor="signup-form-username" className="form-label">
                         Username:
                     </label>
                     <input
                         id="signup-form-username"
-                        className="form-control"
+                        className={
+                            "form-control" +
+                            (this.props.validation_errors.includes("account_exist") ? " is-invalid" : "")
+                        }
                         type="text"
+                        name="signup-form-username"
                         value={this.state.username}
                         onChange={this.handleChangeUsernameInput}
+                        required
                     ></input>
+                    <div className="invalid-feedback">
+                        {this.props.validation_errors.includes("account_exist")
+                            ? "Account with such username already exist."
+                            : ""}
+                    </div>
                 </div>
                 <div className="mb-3">
-                    <label for="signup-form-password" className="form-label">
+                    <label htmlFor="signup-form-password" className="form-label">
                         Password:
                     </label>
                     <input
                         id="signup-form-password"
                         className="form-control"
                         type="password"
+                        name="signup-form-password"
                         value={this.state.password}
                         onChange={this.handleChangePasswordInput}
+                        required
                     ></input>
                 </div>
                 <div className="mb-3">
-                    <label for="signup-form-repeat-password" className="form-label">
+                    <label htmlFor="signup-form-repeat-password" className="form-label">
                         Repeat password:
                     </label>
                     <input
                         id="signup-form-repeat-password"
-                        className="form-control"
+                        className={
+                            "form-control" +
+                            (this.props.validation_errors.includes("repeat_password") ? " is-invalid" : "")
+                        }
                         type="password"
+                        name="signup-form-repeat-password"
                         value={this.state.repeat_password}
                         onChange={this.handleChangeRepeatPasswordInput}
+                        required
+                    ></input>
+                    <div className="invalid-feedback">
+                        {this.props.validation_errors.includes("repeat_password")
+                            ? "Passwords are mismatching."
+                            : ""}
+                    </div>
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="signup-form-remember-me" className="form-label me-2">
+                        RememberMe:
+                    </label>
+                    <input
+                        id="signup-form-remember-me"
+                        className="form-check-input"
+                        type="checkbox"
+                        name="signup-form-remember-me"
+                        value={this.state.remember_me}
+                        onChange={this.handleChangeRememberMeInput}
                     ></input>
                 </div>
 

@@ -14,10 +14,15 @@ class Login extends React.Component {
                 <>
                     <h1>Log in</h1>
 
-                    <LoginForm handleLoginSubmit={this.props.handleLoginSubmit} />
+                    <LoginForm
+                        validation_errors={this.props.validation_errors}
+                        popValidationError={(el) => this.props.popValidationError(el)}
+                        handleLoginSubmit={(d, e) => this.props.handleLoginSubmit(d, e)}
+                    />
 
                     <p>
-                        Or <Link to="/signup">sign up</Link>.
+                        If you don't have an account already created, you can{" "}
+                        <Link to="/signup">sign up</Link>.
                     </p>
                 </>
             );

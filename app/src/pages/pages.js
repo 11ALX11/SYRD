@@ -22,6 +22,7 @@ class Pages extends React.Component {
                         element={
                             <AccountPage
                                 logged_in={this.props.logged_in}
+                                account={this.props.account}
                                 handleLogoutSubmit={(e) => this.props.handleLogoutSubmit(e)}
                             />
                         }
@@ -31,7 +32,9 @@ class Pages extends React.Component {
                         element={
                             <Login
                                 logged_in={this.props.logged_in}
-                                handleLoginSubmit={(e) => this.props.handleLoginSubmit(e)}
+                                validation_errors={this.props.validation_errors}
+                                popValidationError={(el) => this.props.popValidationError(el)}
+                                handleLoginSubmit={(d, e) => this.props.handleLoginSubmit(d, e)}
                             />
                         }
                     />
@@ -40,7 +43,9 @@ class Pages extends React.Component {
                         element={
                             <Signup
                                 logged_in={this.props.logged_in}
-                                handleSignupSubmit={(e) => this.props.handleSignupSubmit(e)}
+                                validation_errors={this.props.validation_errors}
+                                popValidationError={(el) => this.props.popValidationError(el)}
+                                handleSignupSubmit={(d, e) => this.props.handleSignupSubmit(d, e)}
                             />
                         }
                     />

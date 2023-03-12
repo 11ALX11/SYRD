@@ -1,17 +1,27 @@
 import React from "react";
+import { getCookie, setCookie } from "../../helpers/cookies.js";
 
 class LoginForm extends React.Component {
     constructor(props) {
         super(props);
+        let saved_state = JSON.parse(getCookie("LoginFormState"));
+        if (saved_state === null) {
+            saved_state = {};
+        }
         this.state = {
-            username: "",
-            password: "",
-            remember_me: false,
+            username: "username" in saved_state ? saved_state.username : "",
+            password: "password" in saved_state ? saved_state.password : "",
+            remember_me: "remember_me" in saved_state ? saved_state.remember_me : false,
         };
 
         this.handleChangeUsernameInput = this.handleChangeUsernameInput.bind(this);
         this.handleChangePasswordInput = this.handleChangePasswordInput.bind(this);
         this.handleChangeRememberMeInput = this.handleChangeRememberMeInput.bind(this);
+    }
+
+    setState(state) {
+        setCookie("LoginFormState", JSON.stringify({ ...this.state, ...state }));
+        super.setState(state);
     }
 
     handleChangeUsernameInput(event) {
@@ -90,7 +100,7 @@ class LoginForm extends React.Component {
                         className="form-check-input"
                         type="checkbox"
                         name="login-form-remember-me"
-                        value={this.state.remember_me}
+                        checked={this.state.remember_me}
                         onChange={this.handleChangeRememberMeInput}
                     ></input>
                 </div>

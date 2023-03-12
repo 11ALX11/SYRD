@@ -21,7 +21,7 @@ class Signup extends React.Component {
                     />
 
                     <p>
-                        If you have an account, you can <Link to="/login">log in</Link>.
+                        If you already have an account, you can <Link to="/login">log in</Link>.
                     </p>
                 </>
             );

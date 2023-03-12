@@ -33,7 +33,11 @@ class AccountPage extends React.Component {
                                 )}
                                 <tr>
                                     <th>Registration date:</th>
-                                    <td>{this.props.account.registration_date.toLocaleDateString()}</td>
+                                    <td>
+                                        {new Date(
+                                            this.props.account.registration_date
+                                        ).toLocaleDateString()}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

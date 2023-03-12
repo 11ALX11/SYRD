@@ -30,8 +30,19 @@ class Navbar extends React.Component {
                                 <>
                                     <li className="nav-item">
                                         <NavLink className="nav-link" to="/account">
-                                            Account
+                                            Account ({this.props.username})
                                         </NavLink>
+                                    </li>
+                                    <li className="d-flex align-items-center">
+                                        <form
+                                            className="mx-2"
+                                            onSubmit={(e) => this.props.handleLogoutSubmit(e)}
+                                            method="post"
+                                        >
+                                            <button className="btn btn-sm btn-outline-light" type="submit">
+                                                Logout
+                                            </button>
+                                        </form>
                                     </li>
                                 </>
                             )}

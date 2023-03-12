@@ -1,22 +1,33 @@
 import React from "react";
+import { getCookie, setCookie } from "../../helpers/cookies.js";
 
 class SignupForm extends React.Component {
     constructor(props) {
         super(props);
+        let saved_state = JSON.parse(getCookie("SignupFormState"));
+        if (saved_state === null) {
+            saved_state = {};
+        }
         this.state = {
-            username: "",
-            password: "",
-            repeat_password: "",
-            remember_me: false,
+            username: "username" in saved_state ? saved_state.username : "",
+            password: "password" in saved_state ? saved_state.password : "",
+            repeat_password: "repeat_password" in saved_state ? saved_state.repeat_password : "",
+            remember_me: "remember_me" in saved_state ? saved_state.remember_me : false,
         };
+
         this.handleChangeUsernameInput = this.handleChangeUsernameInput.bind(this);
         this.handleChangePasswordInput = this.handleChangePasswordInput.bind(this);
         this.handleChangeRepeatPasswordInput = this.handleChangeRepeatPasswordInput.bind(this);
         this.handleChangeRememberMeInput = this.handleChangeRememberMeInput.bind(this);
     }
 
+    setState(state) {
+        setCookie("SignupFormState", JSON.stringify({ ...this.state, ...state }));
+        super.setState(state);
+    }
+
     handleChangeUsernameInput(event) {
-        this.setState({ username: event.target.value, });
+        this.setState({ username: event.target.value });
         this.props.popValidationError("account_exist");
     }
     handleChangePasswordInput(event) {
@@ -105,7 +116,7 @@ class SignupForm extends React.Component {
                         className="form-check-input"
                         type="checkbox"
                         name="signup-form-remember-me"
-                        value={this.state.remember_me}
+                        checked={this.state.remember_me}
                         onChange={this.handleChangeRememberMeInput}
                     ></input>
                 </div>

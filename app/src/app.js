@@ -34,12 +34,12 @@ class App extends React.Component {
         }
 
         this.state = {
-            logged_in: "logged_in" in saved_account_state ? saved_account_state.username : false,
+            logged_in: "logged_in" in saved_account_state ? saved_account_state.logged_in : false,
             account: {
                 username: "username" in saved_account_state ? saved_account_state.username : "",
-                role: "role" in saved_account_state ? saved_account_state.username : "GUEST",
+                role: "role" in saved_account_state ? saved_account_state.role : "GUEST",
                 registration_date:
-                    "registration_date" in saved_account_state ? saved_account_state.username : "",
+                    "registration_date" in saved_account_state ? saved_account_state.registration_date : "",
             },
             validation_errors: [],
 

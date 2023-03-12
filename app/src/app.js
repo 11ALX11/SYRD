@@ -86,13 +86,13 @@ class App extends React.Component {
         // ToDo post request
         event.preventDefault();
 
-        // fake server side:
+        if (!this.state.logged_in && data.errors.length === 0) {
+            // fake server side:
 
-        // find user in accounts
-        // (using fake BD)
-        let user_account = this.state.accounts.find((i) => i.username === data.username);
+            // find user in accounts
+            // (using fake BD)
+            let user_account = this.state.accounts.find((i) => i.username === data.username);
 
-        if (!this.state.logged_in) {
             // validate
             if (this.validateLoginForm(data, user_account)) {
                 // fake server side end.
@@ -131,36 +131,38 @@ class App extends React.Component {
         // ToDo post request
         event.preventDefault();
 
-        // fake server side:
+        if (!this.state.logged_in && data.errors.length === 0) {
+            // fake server side:
 
-        // try to get user
-        // (using fake BD)
-        let user_account = this.state.accounts.find((i) => i.username === data.username);
+            // try to get user
+            // (using fake BD)
+            let user_account = this.state.accounts.find((i) => i.username === data.username);
 
-        // validate
-        if (this.validateSignupForm(data, user_account)) {
-            // create user
-            let new_accounts = this.state.accounts;
-            new_accounts.push({
-                username: data.username,
-                password: data.password,
-                role: "USER",
-                registration_date: new Date(),
-            });
-            // save user
-            window.localStorage.setItem("AccountsBD", JSON.stringify(new_accounts));
-            this.setState({ accounts: new_accounts });
+            // validate
+            if (this.validateSignupForm(data, user_account)) {
+                // create user
+                let new_accounts = this.state.accounts;
+                new_accounts.push({
+                    username: data.username,
+                    password: data.password,
+                    role: "USER",
+                    registration_date: new Date(),
+                });
+                // save user
+                window.localStorage.setItem("AccountsBD", JSON.stringify(new_accounts));
+                this.setState({ accounts: new_accounts });
 
-            // fake server end.
+                // fake server end.
 
-            // then log in
-            this.handleLoginSubmit(data, event);
+                // then log in
+                this.handleLoginSubmit(data, event);
 
-            // clear form cookies
-            eraseCookie("SignupFormState");
+                // clear form cookies
+                eraseCookie("SignupFormState");
+            }
+            // In case of errors, they will be transmitted through validation_errors state
+            // currently in validation function
         }
-        // In case of errors, they will be transmitted through validation_errors state
-        // currently in validation function
     }
 
     handleLogoutSubmit(event) {
@@ -170,8 +172,9 @@ class App extends React.Component {
         // post logout here
 
         if (this.state.logged_in) {
-            // reset cookie state and app state
+            // reset cookie state
             eraseCookie("AccountState");
+            // reset app state
             this.setState({
                 logged_in: false,
                 account: {
@@ -191,6 +194,13 @@ class App extends React.Component {
             errors.push("username_password");
         }
 
+        if (data.username.match("^(?=.{1,30}$)[a-zA-Z0-9._]+$") === null) {
+            errors.push("username_mask");
+        }
+        if (data.password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+            errors.push("password_mask");
+        }
+
         // add errors to state if there any (dont change state if there is no errors)
         if (errors.length !== 0) this.setState({ validation_errors: errors });
 
@@ -206,8 +216,18 @@ class App extends React.Component {
         }
 
         // check passwords (dont check objects with !==)
-        if (data.password != data.repeat_password) {
+        if (JSON.stringify(data.password) !== JSON.stringify(data.repeat_password)) {
             errors.push("repeat_password");
+        }
+
+        if (data.username.match("^(?=.{1,30}$)[a-zA-Z0-9._]+$") === null) {
+            errors.push("username_mask");
+        }
+        if (data.password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+            errors.push("password_mask");
+        }
+        if (data.repeat_password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+            errors.push("repeat_password_mask");
         }
 
         // add errors to state if there any (dont change state if there is no errors)
@@ -222,7 +242,7 @@ class App extends React.Component {
         let filtered = err.filter((el) => el !== element);
 
         // if pop does nothing, we dont want to update state
-        if (filtered !== err) {
+        if (JSON.stringify(filtered) !== JSON.stringify(err)) {
             this.setState({ validation_errors: filtered });
         }
     }

@@ -37,7 +37,7 @@ class Navbar extends React.Component {
                                     <li className="d-flex align-items-center mx-2">
                                         <button
                                             className="btn btn-sm btn-outline-light"
-                                            data-bs-target="logoutConfirm"
+                                            data-target="logoutConfirm"
                                             onClick={(e) => openModal(e)}
                                         >
                                             Logout

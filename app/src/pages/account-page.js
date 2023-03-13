@@ -45,7 +45,7 @@ class AccountPage extends React.Component {
 
                     <button
                         className="btn btn-primary"
-                        data-bs-target="logoutConfirm"
+                        data-target="logoutConfirm"
                         onClick={(e) => openModal(e)}
                     >
                         Logout

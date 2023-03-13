@@ -7,7 +7,7 @@ function Modal({ children, id, dialogClassName }) {
             className="modal fade"
             tabIndex="-1"
             aria-hidden="true"
-            data-bs-dismiss="modal"
+            data-dismiss="modal"
             onClick={(e) => dismissModal(e)}
         >
             <div className={"modal-dialog" + (dialogClassName ? " " + dialogClassName : "")}>
@@ -23,7 +23,7 @@ function ModalHeader({ children }) {
             <h1 className="modal-title fs-5" id="exampleModalLabel">
                 {children}
             </h1>
-            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" className="btn-close" data-dismiss="modal" aria-label="Close"></button>
         </div>
     );
 }
@@ -35,7 +35,7 @@ function ModalBody({ children }) {
 function ModalFooter({ children }) {
     return (
         <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+            <button type="button" className="btn btn-secondary" data-dismiss="modal">
                 Close
             </button>
             {children}
@@ -44,15 +44,15 @@ function ModalFooter({ children }) {
 }
 
 function openModal(event) {
-    if (event.target.attributes["data-bs-target"] !== undefined) {
-        let el = document.getElementById(event.target.attributes["data-bs-target"].value);
+    if (event.target.attributes["data-target"] !== undefined) {
+        let el = document.getElementById(event.target.attributes["data-target"].value);
         if (el !== null) el.classList.add("show");
     }
 }
 
 function dismissModal(event) {
-    if (event.target.attributes["data-bs-dismiss"] !== undefined) {
-        let el = event.target.closest("." + event.target.attributes["data-bs-dismiss"].value);
+    if (event.target.attributes["data-dismiss"] !== undefined) {
+        let el = event.target.closest("." + event.target.attributes["data-dismiss"].value);
         if (el !== null) {
             el.classList.remove("show");
         }

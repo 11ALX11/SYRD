@@ -3,6 +3,10 @@
     margin-bottom: 126px;
 }
 
+.show {
+    display: block;
+}
+
 header {
     height: 56px;
 }

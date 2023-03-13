@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { openModal } from "../modal/modal.js";
 import "./navbar.css";
 
 class Navbar extends React.Component {
@@ -33,16 +34,14 @@ class Navbar extends React.Component {
                                             Account ({this.props.username})
                                         </NavLink>
                                     </li>
-                                    <li className="d-flex align-items-center">
-                                        <form
-                                            className="mx-2"
-                                            onSubmit={(e) => this.props.handleLogoutSubmit(e)}
-                                            method="post"
+                                    <li className="d-flex align-items-center mx-2">
+                                        <button
+                                            className="btn btn-sm btn-outline-light"
+                                            data-bs-target="logoutConfirm"
+                                            onClick={(e) => openModal(e)}
                                         >
-                                            <button className="btn btn-sm btn-outline-light" type="submit">
-                                                Logout
-                                            </button>
-                                        </form>
+                                            Logout
+                                        </button>
                                     </li>
                                 </>
                             )}

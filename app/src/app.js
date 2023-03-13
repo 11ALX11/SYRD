@@ -4,6 +4,7 @@ import { setCookie, getCookie, eraseCookie } from "./helpers/cookies.js";
 import Pages from "./pages/pages.js";
 import Clock from "./components/clock/clock.js";
 import Navbar from "./components/navbar/navbar.js";
+import AppModals from "./components/modal/modals";
 
 class App extends React.Component {
     constructor(props) {
@@ -52,11 +53,7 @@ class App extends React.Component {
         return (
             <>
                 <header className="fixed-top">
-                    <Navbar
-                        logged_in={this.state.logged_in}
-                        username={this.state.account.username}
-                        handleLogoutSubmit={(e) => this.handleLogoutSubmit(e)}
-                    />
+                    <Navbar logged_in={this.state.logged_in} username={this.state.account.username} />
                 </header>
 
                 <main id="pages" className="container overflow-scroll">
@@ -78,6 +75,8 @@ class App extends React.Component {
                     </address>
                     <Clock />
                 </footer>
+
+                <AppModals handleLogoutSubmit={(e) => this.handleLogoutSubmit(e)} />
             </>
         );
     }

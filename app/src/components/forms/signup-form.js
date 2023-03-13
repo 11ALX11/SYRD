@@ -77,7 +77,7 @@ class SignupForm extends React.Component {
         return err;
     }
 
-    // validates password
+    // validates repeat_password
     validateRepeatPasswordMask(password) {
         let err = this.state.errors;
 

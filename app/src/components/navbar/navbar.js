@@ -21,7 +21,7 @@ class Navbar extends React.Component {
                         <p className="m-0">SYRD app</p>
                     </NavLink>
                     <div className="me-auto navbar-nav-wrapper overflow-hidden">
-                        <ul className="navbar-nav flex-row overflow-scroll text-nowrap">
+                        <ul className="navbar-nav flex-row overflow-auto text-nowrap">
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/">
                                     Home

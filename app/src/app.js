@@ -56,7 +56,7 @@ class App extends React.Component {
                     <Navbar logged_in={this.state.logged_in} username={this.state.account.username} />
                 </header>
 
-                <main id="pages" className="container overflow-scroll">
+                <main id="pages" className="container overflow-auto">
                     <Pages
                         logged_in={this.state.logged_in}
                         account={this.state.account}

@@ -11,7 +11,7 @@
     position: absolute;
     pointer-events: none;
     top: 0;
-    bottom: 4px;
+    bottom: 0;
     width: 30px;
 }
 .navbar-nav-wrapper:before {

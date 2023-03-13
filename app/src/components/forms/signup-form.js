@@ -102,6 +102,7 @@ class SignupForm extends React.Component {
                         ...this.validateRepeatPasswordMask(this.state.repeat_password),
                     ];
                     this.setState({ errors: err });
+                    // validate everything before submiting
                     this.props.handleSignupSubmit(this.state, event);
                 }}
                 method="post"

@@ -20,11 +20,7 @@ class Pages extends React.Component {
                     <Route
                         path="/account"
                         element={
-                            <AccountPage
-                                logged_in={this.props.logged_in}
-                                account={this.props.account}
-                                handleLogoutSubmit={(e) => this.props.handleLogoutSubmit(e)}
-                            />
+                            <AccountPage logged_in={this.props.logged_in} account={this.props.account} />
                         }
                     />
                     <Route

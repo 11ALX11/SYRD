@@ -63,7 +63,6 @@ class App extends React.Component {
                         validation_errors={this.state.validation_errors}
                         popValidationError={(el) => this.popValidationError(el)}
                         handleLoginSubmit={(d, e) => this.handleLoginSubmit(d, e)}
-                        handleLogoutSubmit={(e) => this.handleLogoutSubmit(e)}
                         handleSignupSubmit={(d, e) => this.handleSignupSubmit(d, e)}
                     />
                 </main>

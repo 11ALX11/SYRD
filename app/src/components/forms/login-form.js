@@ -79,6 +79,7 @@ class LoginForm extends React.Component {
                         ...this.validatePasswordMask(this.state.password),
                     ];
                     this.setState({ errors: err });
+                    // validate everything before submiting
                     this.props.handleLoginSubmit(this.state, event);
                 }}
                 method="post"

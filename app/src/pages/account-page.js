@@ -1,11 +1,11 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { openModal } from "../components/modal/modal.js";
 
 class AccountPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
-        this.handleSubmit = this.props.handleLogoutSubmit.bind(this);
     }
 
     render() {
@@ -42,11 +42,14 @@ class AccountPage extends React.Component {
                             </tbody>
                         </table>
                     </div>
-                    <form className="mt-4" onSubmit={this.handleSubmit} method="post">
-                        <button className="btn btn-primary" type="submit">
-                            Logout
-                        </button>
-                    </form>
+
+                    <button
+                        className="btn btn-primary"
+                        data-bs-target="logoutConfirm"
+                        onClick={(e) => openModal(e)}
+                    >
+                        Logout
+                    </button>
                 </>
             );
         } else {

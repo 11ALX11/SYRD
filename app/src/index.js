@@ -9,12 +9,15 @@ import reportWebVitals from "./reportWebVitals";
 document.addEventListener(
     "keydown",
     (event) => {
+        // when ESC (=27) is pressed
         if (event.keyCode === 27) {
+            // find all modals
             let app_modals = [...document.getElementsByClassName("app-modals")];
             let modals = [];
             app_modals.forEach((el) => {
                 modals = [...modals, ...el.getElementsByClassName("modal")];
             });
+            // iterate over all modals
             modals.forEach((modal) => {
                 // close modal
                 modal.classList.remove("show");

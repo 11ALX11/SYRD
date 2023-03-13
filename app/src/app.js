@@ -115,6 +115,8 @@ class App extends React.Component {
                         role: user_account.role,
                         registration_date: user_account.registration_date,
                     },
+                    // clear validation errors
+                    validation_errors: [],
                 });
 
                 // clear form cookies

@@ -46,7 +46,11 @@ function ModalFooter({ children }) {
 function openModal(event) {
     if (event.target.attributes["data-target"] !== undefined) {
         let el = document.getElementById(event.target.attributes["data-target"].value);
-        if (el !== null) el.classList.add("show");
+        if (el !== null) {
+            el.classList.add("show");
+            let focusEl = [...el.getElementsByClassName("focus")];
+            if (focusEl[0] !== undefined) focusEl[0].focus();
+        }
     }
 }
 

@@ -8,7 +8,7 @@ function AppModals(props) {
                 <ModalBody>Do you want to logout?</ModalBody>
                 <ModalFooter>
                     <form onSubmit={(e) => props.handleLogoutSubmit(e)} method="post">
-                        <button type="submit" className="btn btn-danger" data-dismiss="modal">
+                        <button type="submit" className="btn btn-danger focus" data-dismiss="modal">
                             Confirm
                         </button>
                     </form>

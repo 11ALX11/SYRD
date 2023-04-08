@@ -3,7 +3,7 @@
     margin-bottom: 126px;
 }
 
-.show {
+.modal.show {
     display: block;
 }
 

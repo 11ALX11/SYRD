@@ -28,9 +28,8 @@ class Pages extends React.Component {
                         element={
                             <Login
                                 logged_in={this.props.logged_in}
-                                validation_errors={this.props.validation_errors}
-                                popValidationError={(el) => this.props.popValidationError(el)}
-                                handleLoginSubmit={(d, e) => this.props.handleLoginSubmit(d, e)}
+                                accounts={this.props.accounts}
+                                setAppState={(s) => this.props.setAppState(s)}
                             />
                         }
                     />
@@ -39,9 +38,8 @@ class Pages extends React.Component {
                         element={
                             <Signup
                                 logged_in={this.props.logged_in}
-                                validation_errors={this.props.validation_errors}
-                                popValidationError={(el) => this.props.popValidationError(el)}
-                                handleSignupSubmit={(d, e) => this.props.handleSignupSubmit(d, e)}
+                                accounts={this.props.accounts}
+                                setAppState={(s) => this.props.setAppState(s)}
                             />
                         }
                     />

@@ -1,5 +1,5 @@
 import React from "react";
-import { getCookie, setCookie } from "../../helpers/cookies.js";
+import { getCookie, setCookie, eraseCookie } from "../../helpers/cookies.js";
 
 class SignupForm extends React.Component {
     constructor(props) {
@@ -14,6 +14,7 @@ class SignupForm extends React.Component {
             repeat_password: "repeat_password" in saved_state ? saved_state.repeat_password : "",
             remember_me: "remember_me" in saved_state ? saved_state.remember_me : false,
             errors: [],
+            validation_errors: [],
         };
 
         this.handleChangeUsernameInput = this.handleChangeUsernameInput.bind(this);
@@ -28,20 +29,20 @@ class SignupForm extends React.Component {
     }
 
     handleChangeUsernameInput(event) {
-        this.props.popValidationError("account_exist");
-        this.props.popValidationError("username_mask");
+        this.popValidationError("account_exist");
+        this.popValidationError("username_mask");
         let err = this.validateUsernameMask(event.target.value);
         this.setState({ username: event.target.value, errors: err });
     }
     handleChangePasswordInput(event) {
-        this.props.popValidationError("repeat_password");
-        this.props.popValidationError("password_mask");
+        this.popValidationError("repeat_password");
+        this.popValidationError("password_mask");
         let err = this.validatePasswordMask(event.target.value);
         this.setState({ password: event.target.value, errors: err });
     }
     handleChangeRepeatPasswordInput(event) {
-        this.props.popValidationError("repeat_password");
-        this.props.popValidationError("repeat_password_mask");
+        this.popValidationError("repeat_password");
+        this.popValidationError("repeat_password_mask");
         let err = this.validateRepeatPasswordMask(event.target.value);
         this.setState({ repeat_password: event.target.value, errors: err });
     }
@@ -91,6 +92,113 @@ class SignupForm extends React.Component {
         return err;
     }
 
+    handleSignupSubmit(data, event) {
+        // ToDo post request
+        event.preventDefault();
+
+        if (!this.props.logged_in && data.errors.length === 0) {
+            // fake server side:
+
+            // try to get user
+            // (using fake BD)
+            let user_account = this.props.accounts.find((i) => i.username === data.username);
+
+            // validate
+            if (this.validateSignupForm(data, user_account)) {
+                // create user
+                let new_accounts = this.props.accounts;
+                new_accounts.push({
+                    username: data.username,
+                    password: data.password,
+                    role: "USER",
+                    registration_date: new Date(),
+                });
+                // save user
+                window.localStorage.setItem("AccountsBD", JSON.stringify(new_accounts));
+                this.props.setAppState({ accounts: new_accounts });
+
+                // fake server end.
+
+                // then log in
+
+                // find user in accounts
+                // (using fake BD)
+                let user_account = this.props.accounts.find((i) => i.username === data.username);
+
+                // save state by setting cookie
+                setCookie(
+                    "AccountState",
+                    JSON.stringify({
+                        logged_in: true,
+                        username: user_account.username,
+                        role: user_account.role,
+                        registration_date: user_account.registration_date,
+                    }),
+                    // set 1 day cookie, or set session cookie
+                    data.remember_me ? 1 : 0
+                );
+                // log in by setting states
+                this.props.setAppState({
+                    logged_in: true,
+                    account: {
+                        username: user_account.username,
+                        role: user_account.role,
+                        registration_date: user_account.registration_date,
+                    },
+                });
+
+                // clear validation errors
+                this.setState({ validation_errors: [] });
+
+                // clear forms cookies
+                eraseCookie("LoginFormState");
+                eraseCookie("SignupFormState");
+            }
+            // In case of errors, they will be transmitted through validation_errors state
+            // currently in validation function
+        }
+    }
+
+    validateSignupForm(data, user_account) {
+        let errors = [];
+
+        // if found add error
+        if (user_account !== undefined) {
+            errors.push("account_exist");
+        }
+
+        // check passwords (dont check objects with !==)
+        if (JSON.stringify(data.password) !== JSON.stringify(data.repeat_password)) {
+            errors.push("repeat_password");
+        }
+
+        if (data.username.match("^(?=.{1,30}$)[a-zA-Z0-9._]+$") === null) {
+            errors.push("username_mask");
+        }
+        if (data.password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+            errors.push("password_mask");
+        }
+        if (data.repeat_password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+            errors.push("repeat_password_mask");
+        }
+
+        // add errors to state if there any (dont change state if there is no errors)
+        if (errors.length !== 0) this.setState({ validation_errors: errors });
+
+        return errors.length === 0;
+    }
+
+    // Pops validation error (element) from array if present.
+    popValidationError(element) {
+        let err = this.state.validation_errors;
+        let filtered = err.filter((el) => el !== element);
+
+        // if pop does nothing, we dont want to update state
+        if (JSON.stringify(filtered) !== JSON.stringify(err)) {
+            this.setState({ validation_errors: filtered });
+        }
+    }
+
     render() {
         return (
             <form
@@ -103,7 +211,7 @@ class SignupForm extends React.Component {
                     ];
                     this.setState({ errors: err });
                     // validate everything before submiting
-                    this.props.handleSignupSubmit(this.state, event);
+                    this.handleSignupSubmit(this.state, event);
                 }}
                 method="post"
             >
@@ -115,8 +223,8 @@ class SignupForm extends React.Component {
                         id="signup-form-username"
                         className={
                             "form-control" +
-                            (this.props.validation_errors.includes("account_exist") ||
-                            this.props.validation_errors.includes("username_mask") ||
+                            (this.state.validation_errors.includes("account_exist") ||
+                            this.state.validation_errors.includes("username_mask") ||
                             this.state.errors.includes("username_mask")
                                 ? " is-invalid"
                                 : "")
@@ -128,12 +236,12 @@ class SignupForm extends React.Component {
                         required
                     ></input>
                     <div className="invalid-feedback">
-                        {this.props.validation_errors.includes("account_exist")
+                        {this.state.validation_errors.includes("account_exist")
                             ? "Account with such username already exist."
                             : ""}
                     </div>
                     <div className="invalid-feedback">
-                        {this.props.validation_errors.includes("username_mask") ||
+                        {this.state.validation_errors.includes("username_mask") ||
                         this.state.errors.includes("username_mask")
                             ? "Username needs to be 1-30 long and consisting of [a-zA-Z0-9._]"
                             : ""}
@@ -148,7 +256,7 @@ class SignupForm extends React.Component {
                         id="signup-form-password"
                         className={
                             "form-control" +
-                            (this.props.validation_errors.includes("password_mask") ||
+                            (this.state.validation_errors.includes("password_mask") ||
                             this.state.errors.includes("password_mask")
                                 ? " is-invalid"
                                 : "")
@@ -160,7 +268,7 @@ class SignupForm extends React.Component {
                         required
                     ></input>
                     <div className="invalid-feedback">
-                        {this.props.validation_errors.includes("password_mask") ||
+                        {this.state.validation_errors.includes("password_mask") ||
                         this.state.errors.includes("password_mask")
                             ? "Password needs to be 4-30 long and consisting of [a-zA-Z0-9._]"
                             : ""}
@@ -175,8 +283,8 @@ class SignupForm extends React.Component {
                         id="signup-form-repeat-password"
                         className={
                             "form-control" +
-                            (this.props.validation_errors.includes("repeat_password") ||
-                            this.props.validation_errors.includes("repeat_password_mask") ||
+                            (this.state.validation_errors.includes("repeat_password") ||
+                            this.state.validation_errors.includes("repeat_password_mask") ||
                             this.state.errors.includes("repeat_password_mask")
                                 ? " is-invalid"
                                 : "")
@@ -188,12 +296,12 @@ class SignupForm extends React.Component {
                         required
                     ></input>
                     <div className="invalid-feedback">
-                        {this.props.validation_errors.includes("repeat_password")
+                        {this.state.validation_errors.includes("repeat_password")
                             ? "Passwords are mismatching."
                             : ""}
                     </div>
                     <div className="invalid-feedback">
-                        {this.props.validation_errors.includes("repeat_password_mask") ||
+                        {this.state.validation_errors.includes("repeat_password_mask") ||
                         this.state.errors.includes("repeat_password_mask")
                             ? "Password needs to be 4-30 long and consisting of [a-zA-Z0-9._]"
                             : ""}

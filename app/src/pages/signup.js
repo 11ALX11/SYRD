@@ -15,9 +15,9 @@ class Signup extends React.Component {
                     <h1>Sign up</h1>
 
                     <SignupForm
-                        validation_errors={this.props.validation_errors}
-                        popValidationError={(el) => this.props.popValidationError(el)}
-                        handleSignupSubmit={(d, e) => this.props.handleSignupSubmit(d, e)}
+                        logged_in={this.props.logged_in}
+                        accounts={this.props.accounts}
+                        setAppState={(s) => this.props.setAppState(s)}
                     />
 
                     <p>

@@ -1,5 +1,5 @@
 import React from "react";
-import { getCookie, setCookie } from "../../helpers/cookies.js";
+import { getCookie, setCookie, eraseCookie } from "../../helpers/cookies.js";
 
 class LoginForm extends React.Component {
     constructor(props) {
@@ -13,6 +13,7 @@ class LoginForm extends React.Component {
             password: "password" in saved_state ? saved_state.password : "",
             remember_me: "remember_me" in saved_state ? saved_state.remember_me : false,
             errors: [],
+            validation_errors: [],
         };
 
         this.handleChangeUsernameInput = this.handleChangeUsernameInput.bind(this);
@@ -26,14 +27,14 @@ class LoginForm extends React.Component {
     }
 
     handleChangeUsernameInput(event) {
-        this.props.popValidationError("username_password");
-        this.props.popValidationError("username_mask");
+        this.popValidationError("username_password");
+        this.popValidationError("username_mask");
         let err = this.validateUsernameMask(event.target.value);
         this.setState({ username: event.target.value, errors: err });
     }
     handleChangePasswordInput(event) {
-        this.props.popValidationError("username_password");
-        this.props.popValidationError("password_mask");
+        this.popValidationError("username_password");
+        this.popValidationError("password_mask");
         let err = this.validatePasswordMask(event.target.value);
         this.setState({ password: event.target.value, errors: err });
     }
@@ -69,6 +70,87 @@ class LoginForm extends React.Component {
         return err;
     }
 
+    handleLoginSubmit(data, event) {
+        // ToDo post request
+        event.preventDefault();
+
+        if (!this.props.logged_in && data.errors.length === 0) {
+            // fake server side:
+
+            // find user in accounts
+            // (using fake BD)
+            let user_account = this.props.accounts.find((i) => i.username === data.username);
+
+            // validate
+            if (this.validateLoginForm(data, user_account)) {
+                // fake server side end.
+
+                // save state by setting cookie
+                setCookie(
+                    "AccountState",
+                    JSON.stringify({
+                        logged_in: true,
+                        username: user_account.username,
+                        role: user_account.role,
+                        registration_date: user_account.registration_date,
+                    }),
+                    // set 1 day cookie, or set session cookie
+                    data.remember_me ? 1 : 0
+                );
+                // log in by setting states
+                this.props.setAppState({
+                    logged_in: true,
+                    account: {
+                        username: user_account.username,
+                        role: user_account.role,
+                        registration_date: user_account.registration_date,
+                    },
+                });
+
+                // clear validation errors
+                this.setState({ validation_errors: [] });
+
+                // clear form cookies
+                eraseCookie("LoginFormState");
+                eraseCookie("SignupFormState");
+            }
+            // In case of errors, they will be transmitted through validation_errors state
+            // currently in validation function
+        }
+    }
+
+    validateLoginForm(data, user_account) {
+        let errors = [];
+
+        // if not found add error or if passwords mismatch
+        if (user_account === undefined || user_account.password !== data.password) {
+            errors.push("username_password");
+        }
+
+        if (data.username.match("^(?=.{1,30}$)[a-zA-Z0-9._]+$") === null) {
+            errors.push("username_mask");
+        }
+        if (data.password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+            errors.push("password_mask");
+        }
+
+        // add errors to state if there any (dont change state if there is no errors)
+        if (errors.length !== 0) this.setState({ validation_errors: errors });
+
+        return errors.length === 0;
+    }
+
+    // Pops validation error (element) from array if present.
+    popValidationError(element) {
+        let err = this.state.validation_errors;
+        let filtered = err.filter((el) => el !== element);
+
+        // if pop does nothing, we dont want to update state
+        if (JSON.stringify(filtered) !== JSON.stringify(err)) {
+            this.setState({ validation_errors: filtered });
+        }
+    }
+
     render() {
         return (
             <form
@@ -80,7 +162,7 @@ class LoginForm extends React.Component {
                     ];
                     this.setState({ errors: err });
                     // validate everything before submiting
-                    this.props.handleLoginSubmit(this.state, event);
+                    this.handleLoginSubmit(this.state, event);
                 }}
                 method="post"
             >
@@ -92,8 +174,8 @@ class LoginForm extends React.Component {
                         id="login-form-username"
                         className={
                             "form-control" +
-                            (this.props.validation_errors.includes("username_password") ||
-                            this.props.validation_errors.includes("username_mask") ||
+                            (this.state.validation_errors.includes("username_password") ||
+                            this.state.validation_errors.includes("username_mask") ||
                             this.state.errors.includes("username_mask")
                                 ? " is-invalid"
                                 : "")
@@ -105,12 +187,12 @@ class LoginForm extends React.Component {
                         required
                     ></input>
                     <div className="invalid-feedback">
-                        {this.props.validation_errors.includes("username_password")
+                        {this.state.validation_errors.includes("username_password")
                             ? "Wrong username or password."
                             : ""}
                     </div>
                     <div className="invalid-feedback">
-                        {this.props.validation_errors.includes("username_mask") ||
+                        {this.state.validation_errors.includes("username_mask") ||
                         this.state.errors.includes("username_mask")
                             ? "Username needs to be 1-30 long and consisting of [a-zA-Z0-9._]"
                             : ""}
@@ -125,8 +207,8 @@ class LoginForm extends React.Component {
                         id="login-form-password"
                         className={
                             "form-control" +
-                            (this.props.validation_errors.includes("username_password") ||
-                            this.props.validation_errors.includes("password_mask") ||
+                            (this.state.validation_errors.includes("username_password") ||
+                            this.state.validation_errors.includes("password_mask") ||
                             this.state.errors.includes("password_mask")
                                 ? " is-invalid"
                                 : "")
@@ -138,13 +220,13 @@ class LoginForm extends React.Component {
                         required
                     ></input>
                     <div className="invalid-feedback">
-                        {this.props.validation_errors.includes("username_password") ||
-                        this.props.validation_errors.includes("password_mask")
+                        {this.state.validation_errors.includes("username_password") ||
+                        this.state.validation_errors.includes("password_mask")
                             ? "Wrong username or password."
                             : ""}
                     </div>
                     <div className="invalid-feedback">
-                        {this.props.validation_errors.includes("password_mask") ||
+                        {this.state.validation_errors.includes("password_mask") ||
                         this.state.errors.includes("password_mask")
                             ? "Password needs to be 4-30 long and consisting of [a-zA-Z0-9._]"
                             : ""}

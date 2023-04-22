@@ -1,0 +1,3 @@
+#! /bin/bash
+
+docker exec -it syrd-express-api-1 /bin/bash

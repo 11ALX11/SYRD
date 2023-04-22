@@ -1,0 +1,3 @@
+#! /bin/bash
+
+docker exec -it syrd-react-app-1 /bin/bash

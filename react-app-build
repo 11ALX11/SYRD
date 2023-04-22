@@ -1,0 +1,8 @@
+#! /bin/bash
+
+docker exec syrd-react-app-1 npm run build
+
+# insert your user/group
+echo Changing privileges for ./app/build...
+sudo chown aleksey ./app/build
+sudo chgrp aleksey ./app/build

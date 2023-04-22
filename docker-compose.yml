@@ -1,13 +1,12 @@
 version: '2'
 services:
-  nodejs:
-    build: .
+  react-app:
+    build: ./app
     command: npm start
     volumes:
-      - ./:/app:delegated
+      - ./app/:/app:delegated
       - /app/node_modules
     ports:
-      - '8080:8080'
       - '3000:3000'
 
   # postgres:

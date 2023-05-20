@@ -40,10 +40,12 @@ client
         console.error("Ошибка подключения к PostgreSQL", err);
     });
 
-// Подключение middleware CORS
-// ToDo Для тестов с dev сервером
-const cors = require("cors");
-api.use(cors());
+api.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*"); // Разрешить запросы с любого источника
+    res.header("Access-Control-Allow-Methods", "GET, POST"); // Разрешенные HTTP-методы
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Разрешенные заголовки
+    next();
+});
 
 // Подключение middleware body-parser для обработки данных в формате JSON
 const bodyParser = require("body-parser");
@@ -65,7 +67,7 @@ api.post("/login", (req, res) => {
             errors.push("password_mask");
         }
 
-        if (errors.length !== 0) {
+        if (errors.length > 0) {
             return res.status(422).json({ errors: errors });
         }
 
@@ -100,7 +102,7 @@ api.post("/login", (req, res) => {
                     { expiresIn: "24h" }
                 );
 
-                return res.json({
+                return res.status(200).json({
                     token: token,
                     user: {
                         username: user.username,
@@ -116,26 +118,88 @@ api.post("/login", (req, res) => {
     }
 });
 
+api.post("/sign-up", (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const repeat_password = req.body.repeat_password;
+
+    let errors = [];
+
+    // check passwords (dont check objects with !==)
+    if (JSON.stringify(password) !== JSON.stringify(repeat_password)) {
+        errors.push("repeat_password");
+    }
+
+    if (username.match("^(?=.{1,30}$)[a-zA-Z0-9._]+$") === null) {
+        errors.push("username_mask");
+    }
+    if (password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+        errors.push("password_mask");
+    }
+    if (repeat_password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+        errors.push("repeat_password_mask");
+    }
+
+    // if found add error
+    client.query("SELECT username FROM users WHERE username = $1;", [username], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+        }
+
+        if (result.rowCount !== 0) {
+            errors.push("account_exist");
+            return res.status(422).json({ errors: errors });
+        }
+    });
+
+    if (errors.length > 0) {
+        return res.status(422).json({ errors: errors });
+    }
+
+    bcrypt.hash(password, 10, (err, hash) => {
+        if (err) {
+            console.error("Ошибка хеширования пароля:", err);
+            return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+        }
+
+        client.query(
+            "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *",
+            [username, hash],
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+                } else {
+                    const user = result.rows[0];
+
+                    // Генерируем и отправляем токен аутентификации
+                    const token = jwt.sign(
+                        {
+                            username: user.username,
+                            role: user.role,
+                            registration_date: user.registration_date,
+                        },
+                        secret_key,
+                        { expiresIn: "24h" }
+                    );
+
+                    return res.status(200).json({
+                        token: token,
+                        user: {
+                            username: user.username,
+                            role: user.role,
+                            registration_date: user.registration_date,
+                        },
+                    });
+                }
+            }
+        );
+    });
+});
+
 api.get("/get-user", verifyToken, (req, res) => {
     res.status(200).json({ status: true, user: req.user });
-});
-
-// Маршрут /api/req1
-api.get("/req1", (req, res) => {
-    // Обработка запроса к /api/req1
-    // Выполнение запроса к базе данных и отправка результата
-});
-
-// Маршрут /api/req2
-api.get("/req2", (req, res) => {
-    // Обработка запроса к /api/req2
-    // Выполнение запроса к базе данных и отправка результата
-});
-
-// Маршрут /api/req3
-api.post("/req3", (req, res) => {
-    // Обработка POST-запроса к /api/req3
-    // Выполнение запроса к базе данных и отправка результата
 });
 
 api.all("/*", (req, res) => {

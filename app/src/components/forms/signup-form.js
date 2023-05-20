@@ -93,99 +93,66 @@ class SignupForm extends React.Component {
     }
 
     handleSignupSubmit(data, event) {
-        // ToDo post request
         event.preventDefault();
 
         if (!this.props.logged_in && data.errors.length === 0) {
-            // fake server side:
-
-            // try to get user
-            // (using fake BD)
-            let user_account = this.props.accounts.find((i) => i.username === data.username);
-
-            // validate
-            if (this.validateSignupForm(data, user_account)) {
-                // create user
-                let new_accounts = this.props.accounts;
-                new_accounts.push({
+            // TODO
+            fetch("http://localhost:80/api/sign-up", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
                     username: data.username,
                     password: data.password,
-                    role: "USER",
-                    registration_date: new Date(),
+                    repeat_password: data.repeat_password,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.errors && data.errors.length > 0) {
+                        // add errors to state if there any (dont change state if there is no errors)
+                        this.setState({ validation_errors: data.errors });
+                    } else {
+                        const token = data.token;
+                        const user = data.user;
+
+                        // save state by setting cookie
+                        setCookie(
+                            "AccountState",
+                            JSON.stringify({
+                                token: token,
+                            }),
+                            // set 1 day cookie, or set session cookie
+                            data.remember_me ? 1 : 0
+                        );
+                        // log in by setting states
+                        this.props.setAppState({
+                            logged_in: true,
+                            token: token,
+                            account: {
+                                username: user.username,
+                                role: user.role,
+                                registration_date: user.registration_date,
+                            },
+                        });
+
+                        // clear validation errors
+                        this.setState({ validation_errors: [] });
+
+                        // clear form cookies
+                        eraseCookie("LoginFormState");
+                        eraseCookie("SignupFormState");
+                    }
+                })
+                .catch((error) => {
+                    // Обработка ошибки
+                    console.error(error);
                 });
-                // save user
-                window.localStorage.setItem("AccountsBD", JSON.stringify(new_accounts));
-                this.props.setAppState({ accounts: new_accounts });
 
-                // fake server end.
-
-                // then log in
-
-                // find user in accounts
-                // (using fake BD)
-                let user_account = this.props.accounts.find((i) => i.username === data.username);
-
-                // save state by setting cookie
-                setCookie(
-                    "AccountState",
-                    JSON.stringify({
-                        logged_in: true,
-                        username: user_account.username,
-                        role: user_account.role,
-                        registration_date: user_account.registration_date,
-                    }),
-                    // set 1 day cookie, or set session cookie
-                    data.remember_me ? 1 : 0
-                );
-                // log in by setting states
-                this.props.setAppState({
-                    logged_in: true,
-                    account: {
-                        username: user_account.username,
-                        role: user_account.role,
-                        registration_date: user_account.registration_date,
-                    },
-                });
-
-                // clear validation errors
-                this.setState({ validation_errors: [] });
-
-                // clear forms cookies
-                eraseCookie("LoginFormState");
-                eraseCookie("SignupFormState");
-            }
             // In case of errors, they will be transmitted through validation_errors state
             // currently in validation function
         }
-    }
-
-    validateSignupForm(data, user_account) {
-        let errors = [];
-
-        // if found add error
-        if (user_account !== undefined) {
-            errors.push("account_exist");
-        }
-
-        // check passwords (dont check objects with !==)
-        if (JSON.stringify(data.password) !== JSON.stringify(data.repeat_password)) {
-            errors.push("repeat_password");
-        }
-
-        if (data.username.match("^(?=.{1,30}$)[a-zA-Z0-9._]+$") === null) {
-            errors.push("username_mask");
-        }
-        if (data.password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
-            errors.push("password_mask");
-        }
-        if (data.repeat_password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
-            errors.push("repeat_password_mask");
-        }
-
-        // add errors to state if there any (dont change state if there is no errors)
-        if (errors.length !== 0) this.setState({ validation_errors: errors });
-
-        return errors.length === 0;
     }
 
     // Pops validation error (element) from array if present.

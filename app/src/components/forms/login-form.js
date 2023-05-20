@@ -71,73 +71,64 @@ class LoginForm extends React.Component {
     }
 
     handleLoginSubmit(data, event) {
-        // ToDo post request
         event.preventDefault();
 
         if (!this.props.logged_in && data.errors.length === 0) {
-            // fake server side:
+            // TODO
+            fetch("http://localhost:80/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                },
+                body: JSON.stringify({ username: data.username, password: data.password }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.errors && data.errors.length > 0) {
+                        // add errors to state if there any (dont change state if there is no errors)
+                        this.setState({ validation_errors: data.errors });
+                    } else {
+                        const token = data.token;
+                        const user = data.user;
 
-            // find user in accounts
-            // (using fake BD)
-            let user_account = this.props.accounts.find((i) => i.username === data.username);
+                        // save state by setting cookie
+                        setCookie(
+                            "AccountState",
+                            JSON.stringify({
+                                logged_in: true,
+                                token: token,
+                                username: user.username,
+                                role: user.role,
+                                registration_date: user.registration_date,
+                            }),
+                            // set 1 day cookie, or set session cookie
+                            data.remember_me ? 1 : 0
+                        );
+                        // log in by setting states
+                        this.props.setAppState({
+                            logged_in: true,
+                            token: token,
+                            account: {
+                                username: user.username,
+                                role: user.role,
+                                registration_date: user.registration_date,
+                            },
+                        });
 
-            // validate
-            if (this.validateLoginForm(data, user_account)) {
-                // fake server side end.
+                        // clear validation errors
+                        this.setState({ validation_errors: [] });
 
-                // save state by setting cookie
-                setCookie(
-                    "AccountState",
-                    JSON.stringify({
-                        logged_in: true,
-                        username: user_account.username,
-                        role: user_account.role,
-                        registration_date: user_account.registration_date,
-                    }),
-                    // set 1 day cookie, or set session cookie
-                    data.remember_me ? 1 : 0
-                );
-                // log in by setting states
-                this.props.setAppState({
-                    logged_in: true,
-                    account: {
-                        username: user_account.username,
-                        role: user_account.role,
-                        registration_date: user_account.registration_date,
-                    },
+                        // clear form cookies
+                        eraseCookie("LoginFormState");
+                        eraseCookie("SignupFormState");
+                    }
+                })
+                .catch((error) => {
+                    // Обработка ошибки
+                    console.error(error);
                 });
-
-                // clear validation errors
-                this.setState({ validation_errors: [] });
-
-                // clear form cookies
-                eraseCookie("LoginFormState");
-                eraseCookie("SignupFormState");
-            }
-            // In case of errors, they will be transmitted through validation_errors state
-            // currently in validation function
         }
-    }
-
-    validateLoginForm(data, user_account) {
-        let errors = [];
-
-        // if not found add error or if passwords mismatch
-        if (user_account === undefined || user_account.password !== data.password) {
-            errors.push("username_password");
-        }
-
-        if (data.username.match("^(?=.{1,30}$)[a-zA-Z0-9._]+$") === null) {
-            errors.push("username_mask");
-        }
-        if (data.password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
-            errors.push("password_mask");
-        }
-
-        // add errors to state if there any (dont change state if there is no errors)
-        if (errors.length !== 0) this.setState({ validation_errors: errors });
-
-        return errors.length === 0;
     }
 
     // Pops validation error (element) from array if present.

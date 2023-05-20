@@ -15,27 +15,9 @@ class App extends React.Component {
             saved_account_state = {};
         }
 
-        let saved_accounts = JSON.parse(window.localStorage.getItem("AccountsBD"));
-        if (saved_accounts === null) {
-            saved_accounts = [
-                {
-                    username: "user",
-                    password: "user",
-                    role: "USER",
-                    registration_date: "May 30, 2023",
-                },
-                {
-                    username: "admin",
-                    password: "admin",
-                    role: "ADMIN",
-                    registration_date: "December 21, 2012",
-                },
-            ];
-            window.localStorage.setItem("AccountsBD", JSON.stringify(saved_accounts));
-        }
-
         this.state = {
             logged_in: "logged_in" in saved_account_state ? saved_account_state.logged_in : false,
+            token: "token" in saved_account_state ? saved_account_state.token : "",
             account: {
                 username: "username" in saved_account_state ? saved_account_state.username : "",
                 role: "role" in saved_account_state ? saved_account_state.role : "GUEST",
@@ -43,9 +25,6 @@ class App extends React.Component {
                     "registration_date" in saved_account_state ? saved_account_state.registration_date : "",
             },
             validation_errors: [],
-
-            //fake BD for tests
-            accounts: saved_accounts,
         };
     }
 

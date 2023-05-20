@@ -27,17 +27,16 @@ class AppModals extends React.Component {
     }
 
     handleLogoutSubmit(event) {
-        // ToDo post request
         event.preventDefault();
 
-        // post logout here
-
         if (this.props.logged_in) {
+            // Обработка ответа сервера
             // reset cookie state
             eraseCookie("AccountState");
             // reset app state
             this.props.setAppState({
                 logged_in: false,
+                token: "",
                 account: {
                     username: "",
                     role: "GUEST",

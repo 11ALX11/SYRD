@@ -1,6 +1,6 @@
 import React from "react";
 import "./app.css";
-import { getCookie } from "./helpers/cookies.js";
+import { eraseCookie, getCookie } from "./helpers/cookies.js";
 import Pages from "./pages/pages.js";
 import Clock from "./components/clock/clock.js";
 import Navbar from "./components/navbar/navbar.js";
@@ -10,21 +10,59 @@ class App extends React.Component {
     constructor(props) {
         super(props);
 
-        let saved_account_state = JSON.parse(getCookie("AccountState"));
-        if (saved_account_state === null) {
-            saved_account_state = {};
+        let saved_account_state = {};
+        let token_cookie = JSON.parse(getCookie("AccountState"));
+        let token = "";
+        if (token_cookie) token = token_cookie.token;
+
+        if (token !== null && token !== "") {
+            // ToDo
+            fetch("http://localhost:80/api/get-user", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token, // Добавление токена в заголовок Authorization
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    // Обработка ответа сервера
+                    if (!data.message) {
+                        this.setState({
+                            account: {
+                                username: data.user.username,
+                                role: data.user.role,
+                                registration_date: data.user.registration_date,
+                            },
+                        });
+                    } else {
+                        eraseCookie("AccountState");
+                        this.setState({
+                            logged_in: false,
+                            token: "",
+                            account: {
+                                username: "",
+                                role: "GUEST",
+                                registration_date: "",
+                            },
+                        });
+                    }
+                })
+                .catch((error) => {
+                    // Обработка ошибок
+                    console.error("Ошибка запроса:", error);
+                });
         }
 
         this.state = {
-            logged_in: "logged_in" in saved_account_state ? saved_account_state.logged_in : false,
-            token: "token" in saved_account_state ? saved_account_state.token : "",
+            logged_in: token !== null && token !== "",
+            token: "token" in saved_account_state ? token : "",
             account: {
                 username: "username" in saved_account_state ? saved_account_state.username : "",
                 role: "role" in saved_account_state ? saved_account_state.role : "GUEST",
                 registration_date:
                     "registration_date" in saved_account_state ? saved_account_state.registration_date : "",
             },
-            validation_errors: [],
         };
     }
 
@@ -52,7 +90,11 @@ class App extends React.Component {
                     <Clock />
                 </footer>
 
-                <AppModals logged_in={this.state.logged_in} setAppState={(state) => this.setState(state)} />
+                <AppModals
+                    logged_in={this.state.logged_in}
+                    token={this.state.token}
+                    setAppState={(state) => this.setState(state)}
+                />
             </>
         );
     }

@@ -7,6 +7,25 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const secret_key = "dqwh124fsdafFASFdf";
 
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(401).json({ message: "Отсутствует токен авторизации" });
+    }
+
+    jwt.verify(token, secret_key, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: "Неверный токен авторизации" });
+        }
+
+        // Добавление информации о пользователе в объект запроса для последующего использования
+        req.user = decoded;
+
+        next();
+    });
+};
+
 const { Client } = require("pg");
 const dbConfig = require("./config-db");
 
@@ -75,7 +94,11 @@ api.post("/login", (req, res) => {
                 }
 
                 // Генерируем и отправляем токен аутентификации
-                const token = jwt.sign({ username: user.username }, secret_key, { expiresIn: "24h" });
+                const token = jwt.sign(
+                    { username: user.username, role: user.role, registration_date: user.registration_date },
+                    secret_key,
+                    { expiresIn: "24h" }
+                );
 
                 return res.json({
                     token: token,
@@ -91,6 +114,10 @@ api.post("/login", (req, res) => {
         console.error("Ошибка аутентификации", error);
         return res.status(500).json({ message: "Внутренняя ошибка сервера" });
     }
+});
+
+api.get("/get-user", verifyToken, (req, res) => {
+    res.status(200).json({ status: true, user: req.user });
 });
 
 // Маршрут /api/req1

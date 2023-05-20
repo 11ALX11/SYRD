@@ -79,7 +79,6 @@ class LoginForm extends React.Component {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*",
                 },
                 body: JSON.stringify({ username: data.username, password: data.password }),
             })
@@ -96,11 +95,7 @@ class LoginForm extends React.Component {
                         setCookie(
                             "AccountState",
                             JSON.stringify({
-                                logged_in: true,
                                 token: token,
-                                username: user.username,
-                                role: user.role,
-                                registration_date: user.registration_date,
                             }),
                             // set 1 day cookie, or set session cookie
                             data.remember_me ? 1 : 0

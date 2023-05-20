@@ -1,5 +1,7 @@
 #! /bin/bash
 
+rm -r ./api/public
+
 ./react-app-build
 
 cp -r ./app/build ./api/public

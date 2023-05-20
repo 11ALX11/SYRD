@@ -2,10 +2,18 @@ const express = require("express");
 const app = express();
 const port = 80;
 
-app.get("/", (req, res) => {
-    res.send("Hello World!");
-});
+setTimeout(() => {
+    const apiRoutes = require("./api-routes");
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-});
+    app.use("/api", apiRoutes);
+
+    app.use(express.static("public"));
+
+    app.get("/*", (req, res) => {
+        res.sendFile("/api/public/index.html");
+    });
+
+    app.listen(port, () => {
+        console.log(`Api listening on port ${port}`);
+    });
+}, 1000);

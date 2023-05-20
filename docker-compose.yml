@@ -16,13 +16,13 @@ services:
     ports:
       - '80:80'
 
-  # postgres:
-  #  image: postgres:13.3
-  #  restart: always
-  #  environment:
-  #     POSTGRES_PASSWORD: "qweasdzxcPOI09"
-  #     PGDATA: "/var/lib/postgresql/data/pgdata"
-  #  volumes:
-  #     - ../postgresql/data:/var/lib/postgresql/data
-  #  ports:
-  #     - '5433:5432'
+  postgres:
+    image: postgres:13.3
+    restart: always
+    environment:
+       POSTGRES_PASSWORD: "qweasdzxcPOI09"
+       PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+       - ../postgresql/data:/var/lib/postgresql/data
+    ports:
+       - '5433:5432'

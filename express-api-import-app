@@ -1,0 +1,5 @@
+#! /bin/bash
+
+./react-app-build
+
+cp -r ./app/build ./api/public

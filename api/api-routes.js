@@ -55,6 +55,11 @@ api.use((req, res, next) => {
 const bodyParser = require("body-parser");
 api.use(bodyParser.json());
 
+// **********************************************************************
+// *    API routes.                                                     *
+// **********************************************************************
+
+// POST /login
 api.post("/login", (req, res) => {
     try {
         const username = req.body.username;
@@ -122,6 +127,7 @@ api.post("/login", (req, res) => {
     }
 });
 
+// POST /sign-up
 api.post("/sign-up", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -155,53 +161,54 @@ api.post("/sign-up", (req, res) => {
             errors.push("account_exist");
             return res.status(422).json({ errors: errors });
         }
-    });
 
-    if (errors.length > 0) {
-        return res.status(422).json({ errors: errors });
-    }
-
-    bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {
-            console.error("Ошибка хеширования пароля:", err);
-            return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+        if (errors.length > 0) {
+            return res.status(422).json({ errors: errors });
         }
 
-        client.query(
-            "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *",
-            [username, hash],
-            (err, result) => {
-                if (err) {
-                    console.log(err);
-                    return res.status(500).json({ message: "Внутренняя ошибка сервера" });
-                } else {
-                    const user = result.rows[0];
-
-                    // Генерируем и отправляем токен аутентификации
-                    const token = jwt.sign(
-                        {
-                            username: user.username,
-                            role: user.role,
-                            registration_date: user.registration_date,
-                        },
-                        secret_key,
-                        { expiresIn: "24h" }
-                    );
-
-                    return res.status(200).json({
-                        token: token,
-                        user: {
-                            username: user.username,
-                            role: user.role,
-                            registration_date: user.registration_date,
-                        },
-                    });
-                }
+        bcrypt.hash(password, 10, (err, hash) => {
+            if (err) {
+                console.error("Ошибка хеширования пароля:", err);
+                return res.status(500).json({ message: "Внутренняя ошибка сервера" });
             }
-        );
+
+            client.query(
+                "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *",
+                [username, hash],
+                (err, result) => {
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+                    } else {
+                        const user = result.rows[0];
+
+                        // Генерируем и отправляем токен аутентификации
+                        const token = jwt.sign(
+                            {
+                                username: user.username,
+                                role: user.role,
+                                registration_date: user.registration_date,
+                            },
+                            secret_key,
+                            { expiresIn: "24h" }
+                        );
+
+                        return res.status(200).json({
+                            token: token,
+                            user: {
+                                username: user.username,
+                                role: user.role,
+                                registration_date: user.registration_date,
+                            },
+                        });
+                    }
+                }
+            );
+        });
     });
 });
 
+// GET /get-accounts-data/:page
 api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
     if (req.user.role !== "ADMIN") {
         return res.status(403).json({ error: "Forbidden: Access denied." });
@@ -221,6 +228,7 @@ api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
     return res.status(200).json({ pages: 1, data: [req.user] });
 });
 
+// GET /get-user
 api.get("/get-user", verifyToken, (req, res) => {
     res.status(200).json({ status: true, user: req.user });
 });

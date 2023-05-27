@@ -1,0 +1,11 @@
+.network-error-icon-container {
+    display: inline-block;
+    position: relative;
+    width: 32px;
+    vertical-align: text-top;
+}
+.network-error-icon {
+    top: -35px;
+    left: -19px;
+    position: absolute;
+}

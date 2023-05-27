@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "./modal.js";
 import { eraseCookie } from "../../helpers/cookies.js";
+import NetworkErrorIcon from "../icons/network-error-icon.js";
 
 class AppModals extends React.Component {
     constructor(props) {
@@ -21,6 +22,13 @@ class AppModals extends React.Component {
                             </button>
                         </form>
                     </ModalFooter>
+                </Modal>
+                <Modal id="networkError" dialogClassName="modal-dialog-centered">
+                    <ModalHeader>
+                        <NetworkErrorIcon></NetworkErrorIcon>Network error
+                    </ModalHeader>
+                    <ModalBody>Please check your Internet connection.</ModalBody>
+                    <ModalFooter></ModalFooter>
                 </Modal>
             </div>
         );

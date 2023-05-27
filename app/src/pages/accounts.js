@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import Loader from "../components/loader/loader";
 import Pager from "../components/pager/pager";
+import Error403 from "./error403";
+import { openModalById } from "../components/modal/modal";
 
 const HOST = process.env.NODE_ENV === "development" ? "http://localhost:80" : "";
 
@@ -10,26 +12,48 @@ function Accounts(props) {
     const { page } = useParams();
 
     useEffect(() => {
-        fetch(HOST + "/api/get-accounts-data/" + page, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: props.token, // Добавление токена в заголовок Authorization
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (!data.error) {
-                    setState({ loading: false, pages: data.pages, data: data.data }); // Обновляем состояние data с полученными данными
-                }
+        if (props.logged_in && props.account_role === "ADMIN") {
+            fetch(HOST + "/api/get-accounts-data/" + page, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: props.token, // Добавление токена в заголовок Authorization
+                },
             })
-            .catch((error) => {
-                console.error("Error recieving accounts data.", error);
-                alert("Error recieving accounts data. Please check your Internet connection.");
-            });
+                .then((response) => response.json())
+                .then((data) => {
+                    if (!data.error) {
+                        // Обновляем состояние data с полученными данными
+                        setState({ loading: false, pages: data.pages, data: data.data });
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error recieving accounts data.", error);
+                    openModalById("networkError");
+                });
+        }
     }, []);
 
-    if (props.logged_in && props.account_role === "ADMIN" && !state.loading) {
+    if (!props.logged_in) {
+        return (
+            <>
+                <Navigate to="/login" />
+            </>
+        );
+    } else if (props.account_role !== "ADMIN") {
+        return (
+            <>
+                <Error403></Error403>
+            </>
+        );
+    } else if (state.loading) {
+        return (
+            <>
+                <h1>Accounts page</h1>
+                <Loader text="Fetching accounts data"></Loader>
+            </>
+        );
+    } else {
         return (
             <>
                 <h1>Accounts page</h1>
@@ -60,25 +84,6 @@ function Accounts(props) {
                     </tbody>
                 </table>
                 <Pager to="/accounts" currentPage={page} totalPages={state.pages} />
-            </>
-        );
-    } else if (state.loading) {
-        return (
-            <>
-                <h1>Accounts page</h1>
-                <Loader text="Fetching accounts data"></Loader>
-            </>
-        );
-    } else if (!props.logged_in) {
-        return (
-            <>
-                <Navigate to="/login" />
-            </>
-        );
-    } else {
-        return (
-            <>
-                <Navigate to="/account" />
             </>
         );
     }

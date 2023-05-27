@@ -38,7 +38,7 @@ class Navbar extends React.Component {
                                 <>
                                     <li className="nav-item">
                                         <NavLink className="nav-link" to="/account">
-                                            Account ({this.props.username})
+                                            Account {this.props.username && <>({this.props.username})</>}
                                         </NavLink>
                                     </li>
                                     <li className="d-flex align-items-center mx-2">

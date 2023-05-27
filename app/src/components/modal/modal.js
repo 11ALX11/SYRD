@@ -54,6 +54,15 @@ function openModal(event) {
     }
 }
 
+function openModalById(id) {
+    let el = document.getElementById(id);
+    if (el !== null) {
+        el.classList.add("show");
+        let focusEl = [...el.getElementsByClassName("focus")];
+        if (focusEl[0] !== undefined) focusEl[0].focus();
+    }
+}
+
 function dismissModal(event) {
     if (event.target.attributes["data-dismiss"] !== undefined) {
         let el = event.target.closest("." + event.target.attributes["data-dismiss"].value);
@@ -63,4 +72,4 @@ function dismissModal(event) {
     }
 }
 
-export { Modal, ModalHeader, ModalBody, ModalFooter, openModal, dismissModal };
+export { Modal, ModalHeader, ModalBody, ModalFooter, openModal, openModalById, dismissModal };

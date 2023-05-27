@@ -1,5 +1,6 @@
 import React from "react";
 import { getCookie, setCookie, eraseCookie } from "../../helpers/cookies.js";
+import { openModalById } from "../modal/modal.js";
 
 const HOST = process.env.NODE_ENV === "development" ? "http://localhost:80" : "";
 
@@ -110,13 +111,13 @@ class SignupForm extends React.Component {
                 }),
             })
                 .then((response) => response.json())
-                .then((data) => {
-                    if (data.errors && data.errors.length > 0) {
+                .then((_data) => {
+                    if (_data.errors && _data.errors.length > 0) {
                         // add errors to state if there any (dont change state if there is no errors)
                         this.setState({ validation_errors: data.errors });
                     } else {
-                        const token = data.token;
-                        const user = data.user;
+                        const token = _data.token;
+                        const user = _data.user;
 
                         // save state by setting cookie
                         setCookie(
@@ -149,7 +150,7 @@ class SignupForm extends React.Component {
                 .catch((error) => {
                     // Обработка ошибки
                     console.error("Failed to signup.", error);
-                    alert("Failed to signup. Please check your Internet connection.");
+                    openModalById("networkError");
                 });
 
             // In case of errors, they will be transmitted through validation_errors state

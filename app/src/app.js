@@ -5,6 +5,7 @@ import Pages from "./pages/pages.js";
 import Clock from "./components/clock/clock.js";
 import Navbar from "./components/navbar/navbar.js";
 import AppModals from "./components/modal/modals";
+import { openModalById } from "./components/modal/modal";
 
 const HOST = process.env.NODE_ENV === "development" ? "http://localhost:80" : "";
 
@@ -59,21 +60,20 @@ class App extends React.Component {
                 .catch((error) => {
                     // Обработка ошибок
                     console.error("Error getting user data:", error);
-                    alert("Error getting user data. Please check your Internet connection.");
+                    openModalById("networkError");
                 });
         } else {
             loading = false;
         }
 
         this.state = {
-            logged_in: token !== null && token !== "",
-            token: "token" in saved_account_state ? token : "",
+            logged_in: false,
+            token: token,
             loading: loading,
             account: {
-                username: "username" in saved_account_state ? saved_account_state.username : "",
-                role: "role" in saved_account_state ? saved_account_state.role : "GUEST",
-                registration_date:
-                    "registration_date" in saved_account_state ? saved_account_state.registration_date : "",
+                username: "",
+                role: "GUEST",
+                registration_date: "",
             },
         };
     }

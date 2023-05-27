@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./home.js";
 import AccountPage from "./account-page.js";
 import Login from "./login.js";
@@ -29,6 +29,7 @@ class Pages extends React.Component {
                                 />
                             }
                         />
+                        <Route path="/accounts" element={<Navigate to="/accounts/0"></Navigate>}></Route>
                         <Route
                             path="/accounts/:page"
                             element={

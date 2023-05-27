@@ -2,3 +2,6 @@
     background: rgba(var(--bs-dark-rgb), 0.75);
 }
 
+.icon-container {
+    margin-right: 8px;
+}

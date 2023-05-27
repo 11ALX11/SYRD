@@ -24,7 +24,8 @@ function Accounts(props) {
                 }
             })
             .catch((error) => {
-                console.error("Error recieving accounts data:", error);
+                console.error("Error recieving accounts data.", error);
+                alert("Error recieving accounts data. Please check your Internet connection.");
             });
     }, []);
 

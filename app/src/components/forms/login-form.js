@@ -122,7 +122,8 @@ class LoginForm extends React.Component {
                 })
                 .catch((error) => {
                     // Обработка ошибки
-                    console.error(error);
+                    console.error("Failed to login.", error);
+                    alert("Failed to login. Please check your Internet connection.");
                 });
         }
     }

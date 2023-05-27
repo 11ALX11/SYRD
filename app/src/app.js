@@ -59,6 +59,7 @@ class App extends React.Component {
                 .catch((error) => {
                     // Обработка ошибок
                     console.error("Error getting user data:", error);
+                    alert("Error getting user data. Please check your Internet connection.");
                 });
         } else {
             loading = false;

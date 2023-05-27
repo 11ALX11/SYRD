@@ -148,7 +148,8 @@ class SignupForm extends React.Component {
                 })
                 .catch((error) => {
                     // Обработка ошибки
-                    console.error(error);
+                    console.error("Failed to signup.", error);
+                    alert("Failed to signup. Please check your Internet connection.");
                 });
 
             // In case of errors, they will be transmitted through validation_errors state

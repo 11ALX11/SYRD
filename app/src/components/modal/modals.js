@@ -36,6 +36,7 @@ class AppModals extends React.Component {
             // reset app state
             this.props.setAppState({
                 logged_in: false,
+                loading: false,
                 token: "",
                 account: {
                     username: "",

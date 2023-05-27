@@ -1,30 +1,33 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
+import Loader from "../components/loader/loader";
 
 const HOST = process.env.NODE_ENV === "development" ? "http://localhost:80" : "";
 
 function Accounts(props) {
-    const [data, setData] = useState([]);
+    const [state, setState] = useState({ loading: true, data: [] });
+    const { page } = useParams();
 
     useEffect(() => {
-        fetch(HOST + "/api/get-accounts-data", {
+        fetch(HOST + "/api/get-accounts-data/" + page, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: this.props.token, // Добавление токена в заголовок Authorization
+                Authorization: props.token, // Добавление токена в заголовок Authorization
             },
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
-                setData(data); // Обновляем состояние data с полученными данными
+                if (!data.error) {
+                    setState({ loading: false, data: data }); // Обновляем состояние data с полученными данными
+                }
             })
             .catch((error) => {
-                console.error("Ошибка при получении данных из базы данных:", error);
+                console.error("Error recieving accounts data:", error);
             });
     }, []);
 
-    if (this.props.logged_in && this.props.account_role === "ADMIN") {
+    if (props.logged_in && props.account_role === "ADMIN" && !state.loading) {
         return (
             <>
                 <h1>Accounts page</h1>
@@ -34,7 +37,7 @@ function Accounts(props) {
                             <td>Id</td>
                             <td>Username</td>
                             <td>Role</td>
-                            <td>Registration_date</td>
+                            <td>Registration date</td>
                         </tr>
                         <tr>
                             <td>[search]</td>
@@ -44,22 +47,35 @@ function Accounts(props) {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((row) => (
+                        {state.data.map((row) => (
                             <tr>
-                                <td>{row.column1}</td>
-                                <td>{row.column2}</td>
-                                <td>{row.column3}</td>
-                                <td>{row.column4}</td>
+                                <td>{row.id}</td>
+                                <td>{row.username}</td>
+                                <td>{row.role}</td>
+                                <td>{row.registration_date}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </>
         );
-    } else {
+    } else if (state.loading) {
+        return (
+            <>
+                <h1>Accounts page</h1>
+                <Loader text="Fetching accounts data"></Loader>
+            </>
+        );
+    } else if (!props.logged_in) {
         return (
             <>
                 <Navigate to="/login" />
+            </>
+        );
+    } else {
+        return (
+            <>
+                <Navigate to="/account" />
             </>
         );
     }

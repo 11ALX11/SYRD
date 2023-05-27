@@ -202,6 +202,25 @@ api.post("/sign-up", (req, res) => {
     });
 });
 
+api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
+    if (req.user.role !== "ADMIN") {
+        return res.status(403).json({ error: "Forbidden: Access denied." });
+    }
+
+    if (!req.params) {
+        return res.status(400).json({ error: "Bad Request: No page provided." });
+    }
+
+    let page = parseInt(req.params.page);
+    if (!Number.isFinite(page) || page < 0) {
+        return res.status(400).json({ error: "Bad Request: Invalid page." });
+    }
+
+    //Todo query select with limit 10? and offset [page]
+
+    return res.status(200).json([req.user]);
+});
+
 api.get("/get-user", verifyToken, (req, res) => {
     res.status(200).json({ status: true, user: req.user });
 });

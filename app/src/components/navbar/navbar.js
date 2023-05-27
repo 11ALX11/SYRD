@@ -17,7 +17,7 @@ class Navbar extends React.Component {
                         className="navbar-brand d-flex justify-content-center align-items-center"
                         to="/"
                     >
-                        <img className="me-1" src="./android-chrome-192x192.png" alt="ReactImg" />
+                        <img className="me-1" src="/android-chrome-192x192.png" alt="ReactImg" />
                         <p className="m-0">SYRD app</p>
                     </NavLink>
                     <div className="me-auto navbar-nav-wrapper overflow-hidden">
@@ -29,7 +29,7 @@ class Navbar extends React.Component {
                             </li>
                             {this.props.role === "ADMIN" && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/accounts">
+                                    <NavLink className="nav-link" to="/accounts/0">
                                         Accounts
                                     </NavLink>
                                 </li>

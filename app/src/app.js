@@ -16,8 +16,11 @@ class App extends React.Component {
         let token_cookie = JSON.parse(getCookie("AccountState"));
         let token = "";
         if (token_cookie) token = token_cookie.token;
+        let loading;
 
         if (token !== null && token !== "") {
+            loading = true;
+
             fetch(HOST + "/api/get-user", {
                 method: "GET",
                 headers: {
@@ -30,6 +33,9 @@ class App extends React.Component {
                     // Обработка ответа сервера
                     if (!data.message) {
                         this.setState({
+                            logged_in: true,
+                            token: token,
+                            loading: false,
                             account: {
                                 username: data.user.username,
                                 role: data.user.role,
@@ -41,6 +47,7 @@ class App extends React.Component {
                         this.setState({
                             logged_in: false,
                             token: "",
+                            loading: false,
                             account: {
                                 username: "",
                                 role: "GUEST",
@@ -51,13 +58,16 @@ class App extends React.Component {
                 })
                 .catch((error) => {
                     // Обработка ошибок
-                    console.error("Ошибка запроса:", error);
+                    console.error("Error getting user data:", error);
                 });
+        } else {
+            loading = false;
         }
 
         this.state = {
             logged_in: token !== null && token !== "",
             token: "token" in saved_account_state ? token : "",
+            loading: loading,
             account: {
                 username: "username" in saved_account_state ? saved_account_state.username : "",
                 role: "role" in saved_account_state ? saved_account_state.role : "GUEST",
@@ -80,6 +90,8 @@ class App extends React.Component {
 
                 <main id="pages" className="container overflow-auto">
                     <Pages
+                        token={this.state.token}
+                        loading={this.state.loading}
                         logged_in={this.state.logged_in}
                         account={this.state.account}
                         setAppState={(state) => this.setState(state)}

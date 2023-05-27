@@ -5,7 +5,8 @@ const bcrypt = require("bcrypt");
 
 // for jwt token
 const jwt = require("jsonwebtoken");
-const secret_key = "dqwh124fsdafFASFdf";
+const config = require("./config");
+const secret_key = config.secret_key;
 
 const verifyToken = (req, res, next) => {
     const token = req.headers.authorization;
@@ -40,6 +41,9 @@ client
         console.error("Ошибка подключения к PostgreSQL", err);
     });
 
+// Подключение middleware CORS
+const cors = require("cors");
+api.use(cors());
 api.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*"); // Разрешить запросы с любого источника
     res.header("Access-Control-Allow-Methods", "GET, POST"); // Разрешенные HTTP-методы

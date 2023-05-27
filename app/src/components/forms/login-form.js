@@ -1,6 +1,8 @@
 import React from "react";
 import { getCookie, setCookie, eraseCookie } from "../../helpers/cookies.js";
 
+const HOST = process.env.NODE_ENV === "development" ? "http://localhost:80" : "";
+
 class LoginForm extends React.Component {
     constructor(props) {
         super(props);
@@ -74,8 +76,7 @@ class LoginForm extends React.Component {
         event.preventDefault();
 
         if (!this.props.logged_in && data.errors.length === 0) {
-            // TODO
-            fetch("http://localhost:80/api/login", {
+            fetch(HOST + "/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

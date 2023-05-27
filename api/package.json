@@ -8,7 +8,9 @@
         "jsonwebtoken": "^9.0.0",
         "pg": "^8.11.0"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "cors": "^2.8.5"
+    },
     "scripts": {
         "start": "node index.js",
         "test": "echo \"Error: no test specified\" && exit 1"

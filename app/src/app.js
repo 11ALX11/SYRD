@@ -6,6 +6,8 @@ import Clock from "./components/clock/clock.js";
 import Navbar from "./components/navbar/navbar.js";
 import AppModals from "./components/modal/modals";
 
+const HOST = process.env.NODE_ENV === "development" ? "http://localhost:80" : "";
+
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -16,8 +18,7 @@ class App extends React.Component {
         if (token_cookie) token = token_cookie.token;
 
         if (token !== null && token !== "") {
-            // ToDo
-            fetch("http://localhost:80/api/get-user", {
+            fetch(HOST + "/api/get-user", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -70,14 +71,17 @@ class App extends React.Component {
         return (
             <>
                 <header className="fixed-top">
-                    <Navbar logged_in={this.state.logged_in} username={this.state.account.username} />
+                    <Navbar
+                        logged_in={this.state.logged_in}
+                        username={this.state.account.username}
+                        role={this.state.account.role}
+                    />
                 </header>
 
                 <main id="pages" className="container overflow-auto">
                     <Pages
                         logged_in={this.state.logged_in}
                         account={this.state.account}
-                        accounts={this.state.accounts}
                         setAppState={(state) => this.setState(state)}
                     />
                 </main>

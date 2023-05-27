@@ -27,6 +27,13 @@ class Navbar extends React.Component {
                                     Home
                                 </NavLink>
                             </li>
+                            {this.props.role === "ADMIN" && (
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/accounts">
+                                        Accounts
+                                    </NavLink>
+                                </li>
+                            )}
                             {this.props.logged_in && (
                                 <>
                                     <li className="nav-item">

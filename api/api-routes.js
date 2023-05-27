@@ -218,7 +218,7 @@ api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
 
     //Todo query select with limit 10? and offset [page]
 
-    return res.status(200).json([req.user]);
+    return res.status(200).json({ pages: 1, data: [req.user] });
 });
 
 api.get("/get-user", verifyToken, (req, res) => {

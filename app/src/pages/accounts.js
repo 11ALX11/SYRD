@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import Loader from "../components/loader/loader";
+import Pager from "../components/pager/pager";
 
 const HOST = process.env.NODE_ENV === "development" ? "http://localhost:80" : "";
 
 function Accounts(props) {
-    const [state, setState] = useState({ loading: true, data: [] });
+    const [state, setState] = useState({ loading: true, pages: 0, data: [] });
     const { page } = useParams();
 
     useEffect(() => {
@@ -19,7 +20,7 @@ function Accounts(props) {
             .then((response) => response.json())
             .then((data) => {
                 if (!data.error) {
-                    setState({ loading: false, data: data }); // Обновляем состояние data с полученными данными
+                    setState({ loading: false, pages: data.pages, data: data.data }); // Обновляем состояние data с полученными данными
                 }
             })
             .catch((error) => {
@@ -57,6 +58,7 @@ function Accounts(props) {
                         ))}
                     </tbody>
                 </table>
+                <Pager to="/accounts" currentPage={page} totalPages={state.pages} />
             </>
         );
     } else if (state.loading) {

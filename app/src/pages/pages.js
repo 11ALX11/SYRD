@@ -29,7 +29,7 @@ class Pages extends React.Component {
                                 />
                             }
                         />
-                        <Route path="/accounts" element={<Navigate to="/accounts/0"></Navigate>}></Route>
+                        <Route path="/accounts" element={<Navigate to="/accounts/1"></Navigate>}></Route>
                         <Route
                             path="/accounts/:page"
                             element={

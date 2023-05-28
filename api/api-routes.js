@@ -214,18 +214,42 @@ api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
         return res.status(403).json({ error: "Forbidden: Access denied." });
     }
 
-    if (!req.params) {
-        return res.status(400).json({ error: "Bad Request: No page provided." });
+    let page = 1;
+    if (req.params && Number.isFinite(parseInt(req.params.page)) && parseInt(req.params.page) > 0) {
+        page = parseInt(req.params.page);
     }
 
-    let page = parseInt(req.params.page);
-    if (!Number.isFinite(page) || page < 0) {
-        return res.status(400).json({ error: "Bad Request: Invalid page." });
-    }
+    client.query("SELECT COUNT(*) FROM users", [], (err, result) => {
+        if (err) {
+            // Обработка ошибки
+            console.error("Ошибка выполнения запроса:", err);
+            return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+        }
 
-    //Todo query select with limit 10? and offset [page]
+        const page_size = config.page_size;
 
-    return res.status(200).json({ pages: 1, data: [req.user] });
+        const total_users = parseInt(result.rows[0].count);
+        const total_pages = Math.ceil(total_users / page_size);
+
+        // Смещение (начальная позиция записей на текущей странице)
+        const offset = (page - 1) * page_size;
+
+        client.query("SELECT * FROM users OFFSET $1 LIMIT $2", [offset, page_size], (err, result) => {
+            if (err) {
+                // Обработка ошибки
+                console.error("Ошибка выполнения запроса:", err);
+                return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+            }
+
+            const users = result.rows.map((row) => ({
+                id: row.id,
+                username: row.username,
+                registration_date: row.registration_date,
+            }));
+
+            return res.status(200).json({ pages: total_pages, data: users });
+        });
+    });
 });
 
 // GET /get-user

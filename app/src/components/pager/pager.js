@@ -17,7 +17,7 @@ const Pager = (props) => {
 
     const renderPager = () => {
         const pager = [];
-        for (let page = 0; page < totalPages; page++) {
+        for (let page = 1; page <= totalPages; page++) {
             pager.push(renderPageLink(page));
         }
         return pager;

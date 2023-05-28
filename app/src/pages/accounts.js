@@ -12,6 +12,7 @@ function Accounts(props) {
     const { page } = useParams();
 
     useEffect(() => {
+        setState({ loading: true });
         if (props.logged_in && props.account_role === "ADMIN") {
             fetch(HOST + "/api/get-accounts-data/" + page, {
                 method: "GET",
@@ -32,7 +33,7 @@ function Accounts(props) {
                     openModalById("networkError");
                 });
         }
-    }, []);
+    }, [page, props]);
 
     if (!props.logged_in) {
         return (
@@ -43,27 +44,29 @@ function Accounts(props) {
     } else if (props.account_role !== "ADMIN") {
         return (
             <>
-                <Error403></Error403>
+                <Error403 />
             </>
         );
     } else if (state.loading) {
         return (
             <>
                 <h1>Accounts page</h1>
-                <Loader text="Fetching accounts data"></Loader>
+                <Loader text="Fetching accounts data" />
             </>
         );
+    } else if (page > state.pages) {
+        return <Navigate to={"/accounts/" + state.pages} />;
     } else {
         return (
             <>
                 <h1>Accounts page</h1>
                 <table className="table table-hover mt-4 mb-4">
-                    <thead>
+                    <thead className="">
                         <tr>
-                            <td>Id</td>
-                            <td>Username</td>
-                            <td>Role</td>
-                            <td>Registration date</td>
+                            <th>Id</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Registration date</th>
                         </tr>
                         <tr>
                             <td>[search]</td>
@@ -78,7 +81,7 @@ function Accounts(props) {
                                 <td>{row.id}</td>
                                 <td>{row.username}</td>
                                 <td>{row.role}</td>
-                                <td>{row.registration_date}</td>
+                                <td>{new Date(row.registration_date).toLocaleDateString()}</td>
                             </tr>
                         ))}
                     </tbody>

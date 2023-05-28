@@ -29,7 +29,7 @@ class Navbar extends React.Component {
                             </li>
                             {this.props.role === "ADMIN" && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/accounts/0">
+                                    <NavLink className="nav-link" to="/accounts">
                                         Accounts
                                     </NavLink>
                                 </li>

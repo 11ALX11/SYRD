@@ -209,6 +209,74 @@ api.post("/sign-up", (req, res) => {
     });
 });
 
+api.post("/change-password", verifyToken, (req, res) => {
+    const password = req.body.password;
+    const repeat_password = req.body.repeat_password;
+
+    let errors = [];
+
+    // check passwords (dont check objects with !==)
+    if (JSON.stringify(password) !== JSON.stringify(repeat_password)) {
+        errors.push("repeat_password");
+    }
+
+    if (password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+        errors.push("password_mask");
+    }
+    if (repeat_password.match("^(?=.{4,30}$)[a-zA-Z0-9]+$") === null) {
+        errors.push("repeat_password_mask");
+    }
+
+    // if found add error
+
+    if (errors.length > 0) {
+        return res.status(422).json({ errors: errors });
+    }
+
+    client.query(
+        "SELECT id, username, password FROM users WHERE username = $1;",
+        [req.user.username],
+        (err, result) => {
+            if (err || result.rowCount === 0) {
+                console.log(err);
+                return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+            }
+
+            bcrypt.compare(password, result.rows[0].password, (err, isMatch) => {
+                if (err) {
+                    console.error("Ошибка сравнения пароля:", err);
+                    return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+                }
+
+                if (isMatch) {
+                    errors.push("password_same");
+                    return res.status(422).json({ errors: errors });
+                }
+
+                bcrypt.hash(password, 10, (err, hash) => {
+                    if (err) {
+                        console.error("Ошибка хеширования пароля:", err);
+                        return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+                    }
+
+                    client.query(
+                        "UPDATE users SET password = $1 WHERE id = $2;",
+                        [hash, result.rows[0].id],
+                        (err, result) => {
+                            if (err) {
+                                console.error("Ошибка хеширования пароля:", err);
+                                return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+                            } else {
+                                return res.status(200).json({ status: "ok" });
+                            }
+                        }
+                    );
+                });
+            });
+        }
+    );
+});
+
 // GET /get-accounts-data/:page
 api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
     if (req.user.role !== "ADMIN") {

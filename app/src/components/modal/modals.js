@@ -30,6 +30,11 @@ class AppModals extends React.Component {
                     <ModalBody>Please check your Internet connection.</ModalBody>
                     <ModalFooter></ModalFooter>
                 </Modal>
+                <Modal id="alertSuccess" dialogClassName="modal-dialog-centered">
+                    <ModalHeader>Alert</ModalHeader>
+                    <ModalBody>Success!</ModalBody>
+                    <ModalFooter></ModalFooter>
+                </Modal>
             </div>
         );
     }

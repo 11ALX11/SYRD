@@ -24,6 +24,7 @@ class Pages extends React.Component {
                             path="/account"
                             element={
                                 <AccountPage
+                                    token={this.props.token}
                                     logged_in={this.props.logged_in}
                                     account={this.props.account}
                                 />

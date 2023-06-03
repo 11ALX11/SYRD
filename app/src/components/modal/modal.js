@@ -60,6 +60,7 @@ function openModalById(id) {
         el.classList.add("show");
         let focusEl = [...el.getElementsByClassName("focus")];
         if (focusEl[0] !== undefined) focusEl[0].focus();
+        else el.getElementsByClassName("btn")[0].focus();
     }
 }
 
@@ -69,6 +70,9 @@ function dismissModal(event) {
         if (el !== null) {
             el.classList.remove("show");
         }
+        let focusEl = [...el.getElementsByClassName("focus")];
+        if (focusEl[0] !== undefined) focusEl[0].focus();
+        else el.getElementsByClassName("btn")[0].focus();
     }
 }
 

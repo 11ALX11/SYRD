@@ -114,7 +114,7 @@ class SignupForm extends React.Component {
                 .then((_data) => {
                     if (_data.errors && _data.errors.length > 0) {
                         // add errors to state if there any (dont change state if there is no errors)
-                        this.setState({ validation_errors: data.errors });
+                        this.setState({ validation_errors: _data.errors });
                     } else {
                         const token = _data.token;
                         const user = _data.user;
@@ -152,9 +152,6 @@ class SignupForm extends React.Component {
                     console.error("Failed to signup.", error);
                     openModalById("networkError");
                 });
-
-            // In case of errors, they will be transmitted through validation_errors state
-            // currently in validation function
         }
     }
 
@@ -266,7 +263,8 @@ class SignupForm extends React.Component {
                         required
                     ></input>
                     <div className="invalid-feedback">
-                        {this.state.validation_errors.includes("repeat_password")
+                        {this.state.validation_errors.includes("repeat_password") ||
+                        this.state.errors.includes("repeat_password")
                             ? "Passwords are mismatching."
                             : ""}
                     </div>

@@ -192,7 +192,7 @@ function Accounts(props) {
                                     }}
                                 >
                                     <select
-                                        className="form-control"
+                                        className="form-select"
                                         onChange={(e) => {
                                             setRoleFilter(e.target.value);
                                         }}

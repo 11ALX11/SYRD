@@ -212,7 +212,7 @@ class AccountPage extends React.Component {
                                         : ""}
                                 </div>
                             </div>
-                            <button className="btn btn-danger mt-3">Confirm</button>
+                            <button className="btn btn-outline-danger mt-3">Confirm</button>
                         </form>
                     </div>
 

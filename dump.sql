@@ -14,3 +14,9 @@ INSERT INTO users (username, password, role, registration_date)
 VALUES ('user', '$2b$10$ZNwvWRVM2CJOFnQfAl9OHeoqv5BIfI2EjjgnGSIjTTyITf8tYztj6', 'USER', '2023-05-30'),
        ('admin', '$2b$10$/z2MYsGOiOu/prV2YzwmK.4MLitwC9KiWPZFkSqFpVJyMYmjam7z6', 'ADMIN', '2012-12-21');
 
+CREATE TABLE messages (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  text VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);

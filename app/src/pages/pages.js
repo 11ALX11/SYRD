@@ -6,6 +6,7 @@ import Login from "./login.js";
 import Signup from "./signup.js";
 import Error404 from "./error404.js";
 import Accounts from "./accounts.js";
+import ChatRoom from "./chatroom.js";
 import Loader from "../components/loader/loader.js";
 
 class Pages extends React.Component {
@@ -41,6 +42,7 @@ class Pages extends React.Component {
                                 />
                             }
                         />
+                        <Route path="/chat" element={<ChatRoom token={this.props.token} />}></Route>
                         <Route
                             path="/login"
                             element={

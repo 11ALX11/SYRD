@@ -355,6 +355,58 @@ api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
     });
 });
 
+api.get("/get-messages", verifyToken, (req, res) => {
+    const query = `
+      SELECT m.*, u.username AS author_name
+      FROM messages m
+      JOIN users u ON m.user_id = u.id
+      ORDER BY m.created_at ASC
+      LIMIT 50
+    `;
+    client.query(query, [], (err, result) => {
+        if (err) {
+            // Обработка ошибки
+            console.error("Ошибка выполнения запроса:", err);
+            return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+        }
+
+        return res.status(200).json(
+            result.rows.map((row) => ({
+                username: row.author_name,
+                text: row.text,
+                created_at: row.created_at,
+            }))
+        );
+    });
+});
+
+api.post("/send-message", verifyToken, (req, res) => {
+    const { text } = req.body;
+
+    if (text === undefined || text.trim() === "") {
+        return res.status(400).json({ message: "No/empty text." });
+    }
+
+    const etext = format(text);
+
+    client.query("SELECT id FROM users WHERE username = $1;", [req.user.username], (err, result) => {
+        if (err || result.rowCount === 0) {
+            console.log(err);
+            return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+        }
+
+        const query = "INSERT INTO messages (text, user_id) VALUES ($1, $2)";
+        client.query(query, [etext, result.rows[0].id], (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ message: "Внутренняя ошибка сервера" });
+            }
+
+            return res.status(200).json({ status: "ok" });
+        });
+    });
+});
+
 // GET /get-user
 api.get("/get-user", verifyToken, (req, res) => {
     res.status(200).json({ status: true, user: req.user });

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { openModalById } from "../components/modal/modal";
+import { Navigate } from "react-router-dom";
 
 const HOST = process.env.NODE_ENV === "development" ? "http://localhost:80" : "";
 
@@ -28,14 +29,16 @@ function ChatRoom(props) {
                 });
         };
 
-        fetchMessages();
+        if (props.logged_in) {
+            fetchMessages();
 
-        const timer = setInterval(fetchMessages, 2000);
+            const timer = setInterval(fetchMessages, 2000);
 
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+            return () => {
+                clearInterval(timer);
+            };
+        }
+    }, [props]);
 
     const handleInputChange = (event) => {
         if (messagesContainerRef.current) {
@@ -75,45 +78,49 @@ function ChatRoom(props) {
         }
     };
 
-    return (
-        <>
-            <h1 className="mb-4">Chat room</h1>
+    if (props.logged_in) {
+        return (
+            <>
+                <h1 className="mb-4">Chat room</h1>
 
-            <div
-                className="alert alert-light overflow-auto"
-                ref={messagesContainerRef}
-                style={{ height: "50vh" }}
-            >
-                {messages.map((message) => (
-                    <div className="message" key={message.id}>
-                        <div>
-                            <strong>{message.username}</strong>
-                            <span className="text-muted">
-                                {" "}
-                                {new Date(message.created_at).toLocaleTimeString()}
-                            </span>
+                <div
+                    className="alert alert-light overflow-auto"
+                    ref={messagesContainerRef}
+                    style={{ height: "50vh" }}
+                >
+                    {messages.map((message) => (
+                        <div className="message" key={message.id}>
+                            <div>
+                                <strong>{message.username}</strong>
+                                <span className="text-muted">
+                                    {" "}
+                                    {new Date(message.created_at).toLocaleTimeString()}
+                                </span>
+                            </div>
+                            <div>{message.text}</div>
                         </div>
-                        <div>{message.text}</div>
-                    </div>
-                ))}
-            </div>
-
-            <form onSubmit={handleSendMessage}>
-                <div className="input-group mb-2">
-                    <input
-                        className="form-control"
-                        type="text"
-                        value={inputText}
-                        onChange={handleInputChange}
-                        placeholder="Enter message..."
-                    />
-                    <button className="btn btn-outline-primary" type="submit">
-                        Send
-                    </button>
+                    ))}
                 </div>
-            </form>
-        </>
-    );
+
+                <form onSubmit={handleSendMessage}>
+                    <div className="input-group mb-2">
+                        <input
+                            className="form-control"
+                            type="text"
+                            value={inputText}
+                            onChange={handleInputChange}
+                            placeholder="Enter message..."
+                        />
+                        <button className="btn btn-outline-primary" type="submit">
+                            Send
+                        </button>
+                    </div>
+                </form>
+            </>
+        );
+    } else {
+        return <Navigate to="/login" />;
+    }
 }
 
 export default ChatRoom;

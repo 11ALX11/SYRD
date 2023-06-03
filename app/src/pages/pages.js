@@ -42,7 +42,10 @@ class Pages extends React.Component {
                                 />
                             }
                         />
-                        <Route path="/chat" element={<ChatRoom token={this.props.token} />}></Route>
+                        <Route
+                            path="/chat"
+                            element={<ChatRoom token={this.props.token} logged_in={this.props.logged_in} />}
+                        ></Route>
                         <Route
                             path="/login"
                             element={

@@ -127,17 +127,29 @@ function Accounts(props) {
                 <table className="table table-hover mt-4 mb-4">
                     <thead>
                         <tr>
-                            <th className="col-sm-1  link-primary" onClick={() => handleSort("id")}>
-                                Id
+                            <th className="col-sm-1">
+                                <a href="#" className="link-primary" onClick={() => handleSort("id")}>
+                                    Id
+                                </a>
                             </th>
-                            <th className="link-primary" onClick={() => handleSort("username")}>
-                                Username
+                            <th>
+                                <a href="#" className="link-primary" onClick={() => handleSort("username")}>
+                                    Username
+                                </a>
                             </th>
-                            <th className="link-primary" onClick={() => handleSort("role")}>
-                                Role
+                            <th>
+                                <a href="#" className="link-primary" onClick={() => handleSort("role")}>
+                                    Role
+                                </a>
                             </th>
-                            <th className="link-primary" onClick={() => handleSort("registration_date")}>
-                                Registration date
+                            <th>
+                                <a
+                                    href="#"
+                                    className="link-primary"
+                                    onClick={() => handleSort("registration_date")}
+                                >
+                                    Registration date
+                                </a>
                             </th>
                         </tr>
                         <tr>

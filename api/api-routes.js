@@ -304,17 +304,18 @@ api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
             let role = format(req.query.role);
             filterConditions.push("role = '" + role + "'");
         }
-    }
 
-    if (filterConditions.length > 0) {
-        query_count += " WHERE " + filterConditions.join(" AND ");
-        query += " WHERE " + filterConditions.join(" AND ");
+        if (filterConditions.length > 0) {
+            query_count += " WHERE " + filterConditions.join(" AND ");
+            query += " WHERE " + filterConditions.join(" AND ");
+        }
     }
-
     if (req.query.sort_field) {
         let sort_field = format(req.query.sort_field);
         let sort_dir = req.query.sort_dir === undefined ? "ASC" : "DESC";
         query += ` ORDER BY ${sort_field} ${sort_dir}`;
+    } else {
+        query += ` ORDER BY id ASC`;
     }
 
     query += " OFFSET $1 LIMIT $2";

@@ -13,7 +13,6 @@ class App extends React.Component {
     constructor(props) {
         super(props);
 
-        let saved_account_state = {};
         let token_cookie = JSON.parse(getCookie("AccountState"));
         let token = "";
         if (token_cookie) token = token_cookie.token;

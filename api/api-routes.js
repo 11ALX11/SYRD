@@ -28,6 +28,7 @@ const verifyToken = (req, res, next) => {
 };
 
 const { Client } = require("pg");
+const format = require("pg-format");
 const dbConfig = require("./config-db");
 
 const client = new Client(dbConfig);
@@ -211,7 +212,7 @@ api.post("/sign-up", (req, res) => {
 // GET /get-accounts-data/:page
 api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
     if (req.user.role !== "ADMIN") {
-        return res.status(403).json({ error: "Forbidden: Access denied." });
+        return res.status(403).json({ message: "Forbidden: Access denied." });
     }
 
     let page = 1;
@@ -219,7 +220,38 @@ api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
         page = parseInt(req.params.page);
     }
 
-    client.query("SELECT COUNT(*) FROM users", [], (err, result) => {
+    let query_count = "SELECT COUNT(*) FROM users";
+    let query = "SELECT * FROM users";
+    let filterConditions = [];
+
+    if (req.query) {
+        if (req.query.id && Number.isInteger(parseInt(req.query.id))) {
+            filterConditions.push("id = '" + req.query.id + "'");
+        }
+        if (req.query.username) {
+            let username = format(req.query.username);
+            filterConditions.push("username ILIKE '%" + username + "%'");
+        }
+        if (req.query.role === "USER" || req.query.role === "ADMIN") {
+            let role = format(req.query.role);
+            filterConditions.push("role = '" + role + "'");
+        }
+    }
+
+    if (filterConditions.length > 0) {
+        query_count += " WHERE " + filterConditions.join(" AND ");
+        query += " WHERE " + filterConditions.join(" AND ");
+    }
+
+    if (req.query.sort_field) {
+        let sort_field = format(req.query.sort_field);
+        let sort_dir = req.query.sort_dir === undefined ? "ASC" : "DESC";
+        query += ` ORDER BY ${sort_field} ${sort_dir}`;
+    }
+
+    query += " OFFSET $1 LIMIT $2";
+
+    client.query(query_count, [], (err, result) => {
         if (err) {
             // Обработка ошибки
             console.error("Ошибка выполнения запроса:", err);
@@ -229,12 +261,12 @@ api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
         const page_size = config.page_size;
 
         const total_users = parseInt(result.rows[0].count);
-        const total_pages = Math.ceil(total_users / page_size);
+        total_pages = Math.ceil(total_users / page_size);
 
         // Смещение (начальная позиция записей на текущей странице)
         const offset = (page - 1) * page_size;
 
-        client.query("SELECT * FROM users OFFSET $1 LIMIT $2", [offset, page_size], (err, result) => {
+        client.query(query, [offset, page_size], (err, result) => {
             if (err) {
                 // Обработка ошибки
                 console.error("Ошибка выполнения запроса:", err);
@@ -244,9 +276,11 @@ api.get("/get-accounts-data/:page", verifyToken, (req, res) => {
             const users = result.rows.map((row) => ({
                 id: row.id,
                 username: row.username,
+                role: row.role,
                 registration_date: row.registration_date,
             }));
 
+            total_pages = total_pages === 0 ? 1 : total_pages;
             return res.status(200).json({ pages: total_pages, data: users });
         });
     });
@@ -258,7 +292,7 @@ api.get("/get-user", verifyToken, (req, res) => {
 });
 
 api.all("/*", (req, res) => {
-    res.status(404).json({ error: "Route not found / Запрашиваемый маршрут не найден." });
+    res.status(404).json({ message: "Route not found / Запрашиваемый маршрут не найден." });
 });
 
 module.exports = api;
